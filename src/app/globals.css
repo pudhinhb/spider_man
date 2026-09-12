@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-editorial: var(--font-playfair), Georgia, serif;
+    --font-syne: var(--font-syne), sans-serif;
+    --font-space: var(--font-space-grotesk), monospace, sans-serif;
+  }
+
+  html,
+  body {
+    touch-action: manipulation;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (pointer: fine) {
+    *, *::before, *::after, html, body, a, button, input, [role="button"] {
+      cursor: url('/assets/spidey_cursor_32.png') 0 0, auto !important;
+    }
+  }
+}
+
+.font-editorial {
+  font-family: var(--font-editorial);
+}
+
+.font-syne {
+  font-family: var(--font-syne);
+}
+
+.font-space {
+  font-family: var(--font-space);
+}
+
+/* 3D Perspective container */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Top to Bottom Continuous Facial Scan Keyframe */
+@keyframes faceScanLoop {
+  0% {
+    top: 5%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 82%;
+    opacity: 0;
+  }
+}
+
+@keyframes scanBeamGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px #00f0ff) drop-shadow(0 0 20px #00f0ff);
+  }
+  50% {
+    filter: drop-shadow(0 0 16px #00f0ff) drop-shadow(0 0 35px #00f0ff);
+  }
+}
+
+.animate-face-scan {
+  animation: faceScanLoop 2.8s ease-in-out infinite;
+}
+
+.animate-beam-glow {
+  animation: scanBeamGlow 1.5s ease-in-out infinite;
+}
+
+/* Subtle levitation pulse */
+@keyframes wireframeFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.4deg) scale(1.01);
+  }
+}
+
+.animate-wireframe-float {
+  animation: wireframeFloat 4s ease-in-out infinite;
+}
+
+/* Topographic Contour Lines SVG Styling */
+.contour-path {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.06);
+  stroke-width: 1.2;
+  transition: stroke 0.3s ease;
+}
+
+.dark .contour-path {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Tactical Notch Card */
+.tactical-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.dark .tactical-card {
+  background: rgba(15, 15, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e22227;
+}
