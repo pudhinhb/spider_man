@@ -324,12 +324,12 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
       drawH = canvasH;
       drawW = drawH * imgRatio;
       drawX = (canvasW - drawW) / 2;
-      drawY = canvasH - drawH; // bottom anchored to rest on bottom edge
+      drawY = canvasH - drawH; // bottom anchored
     } else {
       drawW = canvasW;
       drawH = drawW / imgRatio;
       drawX = (canvasW - drawW) / 2;
-      drawY = canvasH - drawH; // bottom anchored to rest on bottom edge
+      drawY = canvasH - drawH; // bottom anchored
     }
 
     ctx.globalAlpha = opacity;

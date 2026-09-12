@@ -31,6 +31,11 @@ export const metadata: Metadata = {
   title: "GG. — Full-Stack Architect & Spider-Man Portfolio",
   description:
     "High-end editorial creative developer portfolio inspired by Spider-Man and cinematic 3D wireframe kinetics.",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

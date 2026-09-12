@@ -16,14 +16,18 @@ export const LandoHeroSection: React.FC = () => {
   const skeletonBaseRef = useRef<HTMLDivElement>(null);
   const skeletonScanRef = useRef<HTMLDivElement>(null);
 
-  const [soundOn, setSoundOn] = useState(true);
+  const [soundOn, setSoundOn] = useState(false);
 
-  // Toggle Sound
+  // Keep volume button icon 100% synchronized with actual audio playing state
+  useEffect(() => {
+    return soundManager.subscribe((isPlaying) => {
+      setSoundOn(isPlaying);
+    });
+  }, []);
+
+  // Toggle Spider-Man Theme BGM Soundtrack
   const handleToggleSound = () => {
-    const next = !soundOn;
-    setSoundOn(next);
-    soundManager.enabled = next;
-    if (next) soundManager.playHudBeep(1200);
+    soundManager.toggleBgm();
   };
 
   // GSAP Choreography & Continuous Top-to-Bottom Face Scanning Animation
@@ -47,7 +51,7 @@ export const LandoHeroSection: React.FC = () => {
       );
 
       // 2. CONTINUOUS TOP-TO-BOTTOM FACE SCANNING ANIMATION WITH SMOOTH FADE-IN & FADE-OUT
-      // Dynamically calculate the face position based on screen aspect ratio
+      // Organic elliptical radial mask sweeping from forehead (6%) to chin (58%)
       const scanTl = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: "sine.inOut" } });
 
       const scanObj = { progress: 0 };
@@ -56,31 +60,17 @@ export const LandoHeroSection: React.FC = () => {
         duration: 2.8,
         onUpdate: () => {
           const p = scanObj.progress;
-          const { innerWidth, innerHeight } = window;
-          const canvasRatio = innerWidth / innerHeight;
-          const imgRatio = 1131 / 1391; // ~0.813
-
-          // Calculate exact face position relative to screen height
-          let faceStart = 10;
-          let faceEnd = 55;
-          if (canvasRatio < imgRatio) {
-            // Mobile portrait: bottom-aligned image height is proportionate to width
-            const imgHeightPercent = (canvasRatio / imgRatio) * 100;
-            const imgTopPercent = 100 - imgHeightPercent;
-            faceStart = imgTopPercent + imgHeightPercent * 0.10;
-            faceEnd = imgTopPercent + imgHeightPercent * 0.55;
-          }
-
-          const topPercent = faceStart + (p / 100) * (faceEnd - faceStart);
+          // Calculate vertical position across facial region (6% forehead to 58% chin)
+          const topPercent = 6 + p * 0.52;
 
           // Smooth sinusoidal fade-in and fade-out at top and bottom extremes
           const edgeFade = Math.sin((p / 100) * Math.PI);
           const scanOpacity = Math.pow(edgeFade, 0.45); // Eased curve: stays bright across face, smoothly fades at edges
 
-          // Soft 2D Elliptical Radial Gradient Mask (Eliminates all rectangular/square edges completely!)
+          // Soft 2D Elliptical Radial Gradient Mask centered over the face wireframe
           if (skeletonScanRef.current) {
             skeletonScanRef.current.style.opacity = `${scanOpacity}`;
-            const ellipticalMask = `radial-gradient(ellipse 46% 14% at 50% ${topPercent}%, black 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.2) 68%, transparent 100%)`;
+            const ellipticalMask = `radial-gradient(ellipse 26% 12% at 51% ${topPercent}%, black 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 70%, transparent 100%)`;
             skeletonScanRef.current.style.webkitMaskImage = ellipticalMask;
             skeletonScanRef.current.style.maskImage = ellipticalMask;
           }
@@ -201,51 +191,56 @@ export const LandoHeroSection: React.FC = () => {
       {/* - Layer 1 & 2: Human Developer Portrait & Fluid Ghost Spider-Man Suit Reveal */}
       {/* - Layer 3: Cyan Holographic Skeleton Blueprint with continuous face scan */}
       {/* ========================================================================= */}
-      <div className="absolute inset-0 w-full h-full flex items-end justify-center pointer-events-auto z-10 perspective-1000">
-        <div
-          ref={portraitStageRef}
-          className="relative w-full h-full flex items-end justify-center preserve-3d"
-        >
-
-          {/* LAYER 1 & 2: DYNAMIC HUMAN DEVELOPER PORTRAIT & SPIDER-MAN SUIT REVEAL */}
-          {/* - Base: GG no background.png */}
-          {/* - Reveal: GGSpidey no backgound.png through organic fluid ghost smoke */}
-          {/* - When revealed, the human image is dynamically erased underneath */}
-          <FluidSpideyCanvas
-            humanImageSrc="/assets/gg_human.png"
-            spideyImageSrc="/assets/gg_spidey.png"
-            className="z-10"
-          />
-
-          {/* LAYER 3: SKELETON BLUEPRINT WITH CONTINUOUS TOP-TO-BOTTOM SCANNING */}
-          {/* - Soft 2D Elliptical feathered gradient mask with FADE-IN & FADE-OUT */}
-          <div className="absolute inset-0 w-full h-full pointer-events-none z-20 flex items-end justify-center">
-            {/* 3A: Ambient Ghost Skeleton Blueprint (Ultra Low Opacity: ~0.03) */}
-            <div
-              ref={skeletonBaseRef}
-              className="absolute inset-0 w-full h-full opacity-[0.03] mix-blend-screen"
-            >
-              <Image
-                src="/assets/mask_blueprint.png"
-                alt="Skeleton Wireframe Ambient"
-                fill
-                priority
-                className="object-contain object-bottom filter brightness-90"
+      <div className="absolute inset-0 w-full h-full flex items-end justify-center pointer-events-auto z-10 perspective-1000 overflow-hidden">
+        {/* Dedicated Responsive Scale Container: Immune to GSAP transform overrides on portraitStageRef */}
+        <div className="relative w-full h-full flex items-end justify-center max-sm:scale-[2.85] max-sm:origin-bottom sm:scale-100">
+          <div
+            ref={portraitStageRef}
+            className="relative w-full h-full flex items-end justify-center preserve-3d origin-bottom"
+          >
+            {/* Aspect-Locked 16:9 Stage: Guarantees 100% pixel alignment and accurate facial scan coordinates on ALL mobile & desktop screens */}
+            <div className="relative w-full max-w-[calc(100vh*16/9)] aspect-[16/9] max-h-full flex items-end justify-center">
+              {/* LAYER 1 & 2: DYNAMIC HUMAN DEVELOPER PORTRAIT & SPIDER-MAN SUIT REVEAL */}
+              {/* - Base: GG no background.png */}
+              {/* - Reveal: GGSpidey no backgound.png through organic fluid ghost smoke */}
+              {/* - When revealed, the human image is dynamically erased underneath */}
+              <FluidSpideyCanvas
+                humanImageSrc="/assets/gg_human.png"
+                spideyImageSrc="/assets/gg_spidey.png"
+                className="z-10"
               />
-            </div>
 
-            {/* 3B: High-Intensity Active Scanning Band (Soft 2D Elliptical Radial Mask with Fade In & Out) */}
-            <div
-              ref={skeletonScanRef}
-              className="absolute inset-0 w-full h-full mix-blend-screen opacity-100 transition-all duration-75"
-            >
-              <Image
-                src="/assets/mask_blueprint.png"
-                alt="Skeleton Wireframe Active Scan"
-                fill
-                priority
-                className="object-contain object-bottom filter brightness-150 drop-shadow-[0_0_20px_#00f0ff] drop-shadow-[0_0_35px_#00f0ff]"
-              />
+              {/* LAYER 3: SKELETON BLUEPRINT WITH CONTINUOUS TOP-TO-BOTTOM SCANNING */}
+              {/* - Soft 2D Elliptical feathered gradient mask with FADE-IN & FADE-OUT */}
+              <div className="absolute inset-0 w-full h-full pointer-events-none z-20 flex items-end justify-center">
+                {/* 3A: Ambient Ghost Skeleton Blueprint (Low Opacity: ~0.08) */}
+                <div
+                  ref={skeletonBaseRef}
+                  className="absolute inset-0 w-full h-full opacity-[0.08] mix-blend-screen"
+                >
+                  <Image
+                    src="/assets/mask_blueprint.png"
+                    alt="Skeleton Wireframe Ambient"
+                    fill
+                    priority
+                    className="object-contain object-bottom filter brightness-110"
+                  />
+                </div>
+
+                {/* 3B: High-Intensity Active Scanning Band (Soft 2D Elliptical Radial Mask with Fade In & Out) */}
+                <div
+                  ref={skeletonScanRef}
+                  className="absolute inset-0 w-full h-full mix-blend-screen opacity-100 transition-all duration-75"
+                >
+                  <Image
+                    src="/assets/mask_blueprint.png"
+                    alt="Skeleton Wireframe Active Scan"
+                    fill
+                    priority
+                    className="object-contain object-bottom filter brightness-175 drop-shadow-[0_0_15px_#00f0ff] drop-shadow-[0_0_30px_#00f0ff]"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
