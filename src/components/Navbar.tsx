@@ -5,8 +5,14 @@ import { Volume2, VolumeX, Moon, Sun, Shield, Terminal } from "lucide-react";
 import { soundManager } from "@/lib/sound";
 
 export const Navbar: React.FC = () => {
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    return soundManager.subscribe((isEnabled) => {
+      setSoundEnabled(isEnabled);
+    });
+  }, []);
 
   useEffect(() => {
     // Check initial dark mode preference
@@ -24,10 +30,7 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const toggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    soundManager.enabled = next;
-    if (next) soundManager.playHudBeep(1200);
+    soundManager.toggleBgm();
   };
 
   const toggleTheme = () => {

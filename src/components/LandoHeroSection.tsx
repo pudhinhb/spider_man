@@ -179,10 +179,19 @@ export const LandoHeroSection: React.FC = () => {
         {/* Minimalist Sound Toggle */}
         <button
           onClick={handleToggleSound}
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-white/15 flex items-center justify-center text-zinc-300 hover:text-cyan-400 hover:border-cyan-400/50 transition-all duration-200 bg-black/40 backdrop-blur-md shadow-lg hover:scale-105 active:scale-95"
-          title={soundOn ? "Audio: ON" : "Audio: MUTED"}
+          className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border flex items-center justify-center transition-all duration-300 backdrop-blur-md shadow-lg hover:scale-105 active:scale-95 ${
+            soundOn
+              ? "border-cyan-400/80 bg-cyan-950/40 text-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.4)] ring-1 ring-cyan-400/50"
+              : "border-white/15 bg-black/40 text-zinc-400 hover:text-white hover:border-white/30"
+          }`}
+          title={soundOn ? "Audio: ON (Click to Mute)" : "Audio: MUTED (Click to Unmute)"}
+          aria-label={soundOn ? "Mute audio" : "Unmute audio"}
         >
-          {soundOn ? <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" /> : <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-50" />}
+          {soundOn ? (
+            <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 animate-pulse" />
+          ) : (
+            <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-50" />
+          )}
         </button>
       </header>
 
@@ -263,7 +272,7 @@ export const LandoHeroSection: React.FC = () => {
             width={240}
             height={86}
             priority
-            className="w-28 sm:w-40 lg:w-52 h-auto object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] drop-shadow-[0_0_15px_rgba(255,255,255,0.15)] group-hover:scale-105 group-hover:drop-shadow-[0_0_25px_rgba(239,68,68,0.7)] transition-all duration-300"
+            className=" w-28 sm:w-40 lg:w-52 h-auto object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] drop-shadow-[0_0_15px_rgba(255,255,255,0.15)] group-hover:scale-105 group-hover:drop-shadow-[0_0_25px_rgba(239,68,68,0.7)] transition-all duration-300"
           />
         </div>
       </footer>

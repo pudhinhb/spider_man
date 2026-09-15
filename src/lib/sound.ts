@@ -1,8 +1,9 @@
 // Web Audio API Synthesizer & BGM Manager for Spider-Man Portfolio
-type SoundListener = (isPlaying: boolean) => void;
+type SoundListener = (isEnabled: boolean) => void;
 
 class SoundFX {
   private ctx: AudioContext | null = null;
+  private masterGain: GainNode | null = null;
   private bgmAudio: HTMLAudioElement | null = null;
   private listeners: Set<SoundListener> = new Set();
   private playPromise: Promise<void> | null = null;
@@ -12,7 +13,7 @@ class SoundFX {
   private notify() {
     this.listeners.forEach((listener) => {
       try {
-        listener(this.isBgmPlaying);
+        listener(this.enabled);
       } catch (e) {
         console.error("Sound listener error:", e);
       }
@@ -21,7 +22,7 @@ class SoundFX {
 
   public subscribe(listener: SoundListener): () => void {
     this.listeners.add(listener);
-    listener(this.isBgmPlaying);
+    listener(this.enabled);
     return () => {
       this.listeners.delete(listener);
     };
@@ -35,6 +36,9 @@ class SoundFX {
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.setValueAtTime(this.enabled ? 1.0 : 0.0, this.ctx.currentTime);
+        this.masterGain.connect(this.ctx.destination);
       }
     }
     if (this.ctx && this.ctx.state === "suspended") {
@@ -49,10 +53,10 @@ class SoundFX {
       this.bgmAudio = new Audio("/audio/spiderman.mp3");
       this.bgmAudio.loop = true;
       this.bgmAudio.volume = 0.45;
+      this.bgmAudio.muted = !this.enabled;
 
       this.bgmAudio.addEventListener("play", () => {
         this.isBgmPlaying = true;
-        this.enabled = true;
         this.notify();
       });
 
@@ -81,11 +85,11 @@ class SoundFX {
     this.getContext();
     if (!this.bgmAudio) return;
 
+    this.bgmAudio.muted = false;
     try {
       this.playPromise = this.bgmAudio.play();
       await this.playPromise;
       this.isBgmPlaying = true;
-      this.enabled = true;
       this.notify();
     } catch (err) {
       console.warn("Audio play prevented or interrupted:", err);
@@ -97,9 +101,9 @@ class SoundFX {
   }
 
   public async pauseBgm() {
-    this.getContext();
     if (!this.bgmAudio) return;
 
+    this.bgmAudio.muted = true;
     if (this.playPromise) {
       try {
         await this.playPromise;
@@ -112,29 +116,45 @@ class SoundFX {
       this.bgmAudio.pause();
     }
     this.isBgmPlaying = false;
+    this.notify();
+  }
+
+  public unmute(): void {
+    this.enabled = true;
+    const ctx = this.getContext();
+    if (this.masterGain && ctx) {
+      this.masterGain.gain.setValueAtTime(1.0, ctx.currentTime);
+    }
+    this.playHudBeep(1200);
+    this.playBgm();
+    this.notify();
+  }
+
+  public mute(): void {
     this.enabled = false;
+    const ctx = this.getContext();
+    if (this.masterGain && ctx) {
+      this.masterGain.gain.setValueAtTime(0.0, ctx.currentTime);
+    }
+    this.pauseBgm();
     this.notify();
   }
 
   public toggleBgm(): boolean {
-    this.initBgm();
-    this.getContext();
-
-    if (this.isBgmPlaying || (this.bgmAudio && !this.bgmAudio.paused)) {
-      this.playHudBeep(600);
-      this.pauseBgm();
+    if (this.enabled) {
+      this.mute();
       return false;
     } else {
-      this.playHudBeep(1200);
-      this.playBgm();
+      this.unmute();
       return true;
     }
   }
 
   // Web Shooter "THWIP!" sound
   public playThwip() {
+    if (!this.enabled) return;
     const ctx = this.getContext();
-    if (!ctx) return;
+    if (!ctx || !this.masterGain) return;
 
     const now = ctx.currentTime;
 
@@ -161,7 +181,7 @@ class SoundFX {
 
     noise.connect(noiseFilter);
     noiseFilter.connect(noiseGain);
-    noiseGain.connect(ctx.destination);
+    noiseGain.connect(this.masterGain);
     noise.start(now);
 
     // High snap oscillator
@@ -175,15 +195,16 @@ class SoundFX {
     oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
 
     osc.connect(oscGain);
-    oscGain.connect(ctx.destination);
+    oscGain.connect(this.masterGain);
     osc.start(now);
     osc.stop(now + 0.15);
   }
 
   // Spider-Sense intuitive chime/hum
   public playSpiderSense() {
+    if (!this.enabled) return;
     const ctx = this.getContext();
-    if (!ctx) return;
+    if (!ctx || !this.masterGain) return;
 
     const now = ctx.currentTime;
     const osc1 = ctx.createOscillator();
@@ -205,7 +226,7 @@ class SoundFX {
 
     osc1.connect(gain);
     osc2.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.masterGain);
 
     osc1.start(now);
     osc2.start(now);
@@ -215,8 +236,9 @@ class SoundFX {
 
   // High-tech HUD Click/Hover
   public playHudBeep(freq = 900) {
+    if (!this.enabled) return;
     const ctx = this.getContext();
-    if (!ctx) return;
+    if (!ctx || !this.masterGain) return;
 
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
@@ -230,7 +252,7 @@ class SoundFX {
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.masterGain);
 
     osc.start(now);
     osc.stop(now + 0.05);
@@ -238,8 +260,9 @@ class SoundFX {
 
   // Suit Activate Sound
   public playSuitPower() {
+    if (!this.enabled) return;
     const ctx = this.getContext();
-    if (!ctx) return;
+    if (!ctx || !this.masterGain) return;
 
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
@@ -259,7 +282,7 @@ class SoundFX {
 
     osc.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.masterGain);
 
     osc.start(now);
     osc.stop(now + 0.45);
