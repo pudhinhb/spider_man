@@ -225,7 +225,7 @@ export const LandoHeroSection: React.FC = () => {
                 {/* 3A: Ambient Ghost Skeleton Blueprint (Low Opacity: ~0.08) */}
                 <div
                   ref={skeletonBaseRef}
-                  className="absolute inset-0 w-full h-full opacity-[0.08] mix-blend-screen"
+                  className="absolute inset-0 w-full h-full opacity-0 mix-blend-screen"
                 >
                   <Image
                     src="/assets/mask_blueprint.png"
@@ -239,7 +239,7 @@ export const LandoHeroSection: React.FC = () => {
                 {/* 3B: High-Intensity Active Scanning Band (Soft 2D Elliptical Radial Mask with Fade In & Out) */}
                 <div
                   ref={skeletonScanRef}
-                  className="absolute inset-0 w-full h-full mix-blend-screen opacity-100 transition-all duration-75"
+                  className="absolute inset-0 w-full h-full mix-blend-screen opacity-0 transition-all duration-75"
                 >
                   <Image
                     src="/assets/mask_blueprint.png"

@@ -4,7 +4,7 @@ import { CustomSpiderCursor } from "@/components/CustomSpiderCursor";
 export default function Home() {
   return (
     <main className="w-full h-screen min-h-screen relative bg-black text-white overflow-hidden select-none">
-      {/* Spider-Sense Custom Precision Cursor */}
+      {/* Spider-Sense Custom Precision  */}
       <CustomSpiderCursor />
 
       {/* Full-Screen Spider-Man Hero Stage */}
