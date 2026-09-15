@@ -196,7 +196,7 @@ export const LandoHeroSection: React.FC = () => {
       </header>
 
       {/* ========================================================================= */}
-      {/* 3. FULL-SCREEN 3-LAYER INTERACTIVE COMPOSITION (BOTTOM-ANCHORED HERO STAGE) */}
+      {/* 3. FULL-SCREEN 3-LAYER INTERACTIVE COMPOSITION (BbOTTOM-ANCHORED HERO STAGE) */}
       {/* - Layer 1 & 2: Human Developer Portrait & Fluid Ghost Spider-Man Suit Reveal */}
       {/* - Layer 3: Cyan Holographic Skeleton Blueprint with continuous face scan */}
       {/* ========================================================================= */}
