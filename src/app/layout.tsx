@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Space_Grotesk, Syne, Playfair_Display } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk, Syne, Playfair_Display, Sora } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,6 +27,12 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+  weight: ["300", "400", "600", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "GG. — Full-Stack Architect & Spider-Man Portfolio",
   description:
@@ -46,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${syne.variable} ${playfair.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${syne.variable} ${playfair.variable} ${sora.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-black text-white overflow-x-hidden selection:bg-red-600 selection:text-white">
         {children}
