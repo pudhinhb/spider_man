@@ -3,6 +3,8 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Ferrofluid from "@/components/Ferrofluid";
+import ShinyText from "@/components/ShinyText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -113,41 +115,57 @@ export const Chapter2Section: React.FC<{
     return () => ctx.revert();
   }, []);
 
-  // Line 1 Phrases — Marvel cinematic font (Clean solid white, zero glow)
+  // Line 1 Phrases — Marvel cinematic font with ShinyText effect
   const row1Phrases = Array.from({ length: PHRASE_COUNT }, (_, i) => (
     <span
       key={i}
-      className="inline-block whitespace-nowrap px-6 sm:px-10 lg:px-14 font-black uppercase text-white select-none leading-none"
+      className="inline-block whitespace-nowrap px-6 sm:px-10 lg:px-14 font-black uppercase select-none leading-none"
       style={{
         fontSize: "clamp(2.8rem, 5.8vw, 6rem)",
-        color: "#ffffff",
-        textShadow: "none",
         fontFamily: "var(--font-bebas), var(--font-marvel), sans-serif",
         letterSpacing: "0.05em",
         lineHeight: "1",
       }}
       aria-hidden={i > 0 ? true : undefined}
     >
-      {QUOTE}
+      <ShinyText
+        text={QUOTE}
+        speed={2}
+        delay={0}
+        color="#b5b5b5"
+        shineColor="#ffffff"
+        spread={120}
+        direction="left"
+        yoyo={false}
+        pauseOnHover={false}
+      />
     </span>
   ));
 
-  // Line 2 Phrases — Comic handwritten font (Clean solid white, zero glow)
+  // Line 2 Phrases — Comic handwritten font with ShinyText effect
   const row2Phrases = Array.from({ length: PHRASE_COUNT }, (_, i) => (
     <span
       key={i}
-      className="inline-block whitespace-nowrap px-6 sm:px-10 lg:px-14 text-white select-none leading-none"
+      className="inline-block whitespace-nowrap px-6 sm:px-10 lg:px-14 select-none leading-none"
       style={{
         fontSize: "clamp(2.2rem, 4.5vw, 4.8rem)",
-        color: "#ffffff",
-        textShadow: "none",
         fontFamily: "var(--font-handwritten), 'Permanent Marker', cursive",
         letterSpacing: "0.02em",
         lineHeight: "1",
       }}
       aria-hidden={i > 0 ? true : undefined}
     >
-      {QUOTE}
+      <ShinyText
+        text={QUOTE}
+        speed={2}
+        delay={0}
+        color="#b5b5b5"
+        shineColor="#ffffff"
+        spread={120}
+        direction="right"
+        yoyo={false}
+        pauseOnHover={false}
+      />
     </span>
   ));
 
@@ -169,18 +187,28 @@ export const Chapter2Section: React.FC<{
         {/* ────────────────────────────────────────────── */}
         <div
           ref={bgRef}
-          className="absolute inset-0 w-full h-full z-0"
+          className="absolute inset-0 w-full h-full z-0 overflow-hidden"
           style={{ background: "#0a0a0a", opacity: 0 }}
         >
-          {/* Subtle organic SVG texture overlay (topographic contours) */}
-          <div
-            className="absolute inset-0 w-full h-full"
-            style={{
-              opacity: 0.035,
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 10 Q40 30 20 50 Q0 70 20 90' fill='none' stroke='%23ffffff' stroke-width='0.6'/%3E%3Cpath d='M50 5 Q70 25 50 45 Q30 65 50 85' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M80 15 Q60 35 80 55 Q100 75 80 95' fill='none' stroke='%23ffffff' stroke-width='0.6'/%3E%3C/svg%3E")`,
-              backgroundSize: "180px 180px",
-            }}
-          />
+          {/* Ferrofluid Liquid Metal Background Animation (React Bits) */}
+          <div className="absolute inset-0 w-full h-full pointer-events-auto opacity-25">
+            <Ferrofluid
+              colors={["#ffffff", "#ffffff", "#ffffff"]}
+              speed={0.2}
+              scale={1}
+              turbulence={1}
+              fluidity={0.06}
+              rimWidth={0.18}
+              sharpness={1.8}
+              shimmer={1}
+              glow={2}
+              flowDirection="up"
+              opacity={0.25}
+              mouseInteraction={true}
+              mouseStrength={1}
+              mouseRadius={0.6}
+            />
+          </div>
         </div>
 
         {/* ────────────────────────────────────────────── */}
