@@ -1,5 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Space_Grotesk, Syne, Playfair_Display, Sora } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Space_Grotesk,
+  Syne,
+  Playfair_Display,
+  Sora,
+  Marvel,
+  Bebas_Neue,
+  Permanent_Marker,
+} from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,6 +43,24 @@ const sora = Sora({
   weight: ["300", "400", "600", "700", "800"],
 });
 
+const marvelFont = Marvel({
+  variable: "--font-marvel",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const permanentMarker = Permanent_Marker({
+  variable: "--font-handwritten",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "GG. — Full-Stack Architect & Spider-Man Portfolio",
   description:
@@ -52,7 +80,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${syne.variable} ${playfair.variable} ${sora.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${syne.variable} ${playfair.variable} ${sora.variable} ${marvelFont.variable} ${bebasNeue.variable} ${permanentMarker.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-black text-white overflow-x-hidden selection:bg-red-600 selection:text-white">
         {children}

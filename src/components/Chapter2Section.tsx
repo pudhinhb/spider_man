@@ -52,7 +52,12 @@ export const Chapter2Section: React.FC<{
         },
       });
 
-      // Hero container: scale down from 1.0 → 0.38 with rounded corners
+      // ─────────────────────────────────────────────────────────────
+      // 1. HERO ZOOM-OUT (0.0 → 0.5):
+      // Hero zooms down to its end stage limit (0.38 scale) during the
+      // first half of scroll. From 0.5 → 1.0 (the 1 additional scroll phase),
+      // the hero stays fixed at 0.38.
+      // ─────────────────────────────────────────────────────────────
       tl.fromTo(
         heroContainer,
         {
@@ -62,41 +67,45 @@ export const Chapter2Section: React.FC<{
         {
           scale: 0.38,
           borderRadius: "24px",
-          ease: "power1.inOut",
+          ease: "power2.out",
+          duration: 0.5,
         },
         0
       );
 
-      // Background: fade from transparent black to solid dark
+      // Background overlay fades in during initial zoom
       tl.fromTo(
         bg,
         { opacity: 0 },
-        { opacity: 1, ease: "none" },
+        { opacity: 1, ease: "none", duration: 0.4 },
         0
       );
 
-      // Text layer: fade in as hero shrinks
+      // Text layer fades in smoothly right at the start so it's visible
       tl.fromTo(
         textLayer,
         { opacity: 0 },
-        { opacity: 1, ease: "none" },
-        0.04
+        { opacity: 1, ease: "none", duration: 0.18 },
+        0.02
       );
 
-      // Background text movement: strictly triggered by scrolling (GSAP scrub)
-      // Line 1: translates towards the left as user scrolls down
+      // ─────────────────────────────────────────────────────────────
+      // 2. SMOOTH GSAP SCROLLING TEXT (0.0 → 1.0):
+      // - Active and moving during the hero zoom-out phase (0.0 → 0.5)
+      // - Continues scrolling through the 1 additional scroll phase (0.5 → 1.0)
+      //   after the hero reaches its zoom end stage!
+      // ─────────────────────────────────────────────────────────────
       tl.fromTo(
         row1,
-        { xPercent: -8 },
-        { xPercent: -22, ease: "none" },
+        { xPercent: -4 },
+        { xPercent: -34, ease: "none", duration: 1 },
         0
       );
 
-      // Line 2: translates towards the right as user scrolls down
       tl.fromTo(
         row2,
-        { xPercent: -22 },
-        { xPercent: -8, ease: "none" },
+        { xPercent: -34 },
+        { xPercent: -4, ease: "none", duration: 1 },
         0
       );
     }, sectionRef);
@@ -104,16 +113,37 @@ export const Chapter2Section: React.FC<{
     return () => ctx.revert();
   }, []);
 
-  const rowPhrases = Array.from({ length: PHRASE_COUNT }, (_, i) => (
+  // Line 1 Phrases — Marvel cinematic font (Clean solid white, zero glow)
+  const row1Phrases = Array.from({ length: PHRASE_COUNT }, (_, i) => (
     <span
       key={i}
-      className="inline-block whitespace-nowrap px-6 sm:px-10 lg:px-14 font-sora font-black italic uppercase tracking-wider text-white select-none"
+      className="inline-block whitespace-nowrap px-6 sm:px-10 lg:px-14 font-black uppercase text-white select-none leading-none"
       style={{
-        fontSize: "clamp(2.5rem, 5.5vw, 5.5rem)",
+        fontSize: "clamp(2.8rem, 5.8vw, 6rem)",
         color: "#ffffff",
-        textShadow:
-          "0 0 35px rgba(255,255,255,0.22), 0 0 70px rgba(255,255,255,0.08)",
-        fontFamily: "var(--font-sora), sans-serif",
+        textShadow: "none",
+        fontFamily: "var(--font-bebas), var(--font-marvel), sans-serif",
+        letterSpacing: "0.05em",
+        lineHeight: "1",
+      }}
+      aria-hidden={i > 0 ? true : undefined}
+    >
+      {QUOTE}
+    </span>
+  ));
+
+  // Line 2 Phrases — Comic handwritten font (Clean solid white, zero glow)
+  const row2Phrases = Array.from({ length: PHRASE_COUNT }, (_, i) => (
+    <span
+      key={i}
+      className="inline-block whitespace-nowrap px-6 sm:px-10 lg:px-14 text-white select-none leading-none"
+      style={{
+        fontSize: "clamp(2.2rem, 4.5vw, 4.8rem)",
+        color: "#ffffff",
+        textShadow: "none",
+        fontFamily: "var(--font-handwritten), 'Permanent Marker', cursive",
+        letterSpacing: "0.02em",
+        lineHeight: "1",
       }}
       aria-hidden={i > 0 ? true : undefined}
     >
@@ -126,9 +156,9 @@ export const Chapter2Section: React.FC<{
       ref={sectionRef}
       id="chapter-2-scroll"
       className="relative w-full"
-      style={{ height: "480vh" }}
+      style={{ height: "360vh" }}
     >
-      {/* Sticky Viewport — stays pinned for 480vh scroll distance */}
+      {/* Sticky Viewport — stays pinned for scroll choreography */}
       <div
         ref={stickyRef}
         className="relative w-full overflow-hidden"
@@ -155,33 +185,33 @@ export const Chapter2Section: React.FC<{
 
         {/* ────────────────────────────────────────────── */}
         {/* LAYER 2: Middle 2 Text Lines                   */}
-        {/* Moves ONLY when scrolling via GSAP scrub       */}
-        {/* White color, Sora font, elegant spacing        */}
+        {/* Balanced spacing between lines, No Glow        */}
+        {/* Scrolls during zoom & for 1 scroll after       */}
         {/* ────────────────────────────────────────────── */}
         <div
           ref={textLayerRef}
-          className="absolute inset-0 w-full h-full z-10 flex flex-col justify-center items-center gap-4 sm:gap-8 pointer-events-none select-none overflow-hidden"
+          className="absolute inset-0 w-full h-full z-10 flex flex-col justify-center items-center gap-3 sm:gap-4 lg:gap-5 pointer-events-none select-none overflow-hidden"
           style={{ opacity: 0 }}
         >
-          {/* Line 1 — translates left on scroll */}
-          <div className="w-full overflow-hidden flex items-center py-2">
+          {/* Line 1 — Marvel Font (translates left on scroll) */}
+          <div className="w-full overflow-hidden flex items-center py-1 my-0 leading-none">
             <div
               ref={row1Ref}
               className="flex flex-nowrap will-change-transform"
               style={{ width: "max-content" }}
             >
-              {rowPhrases}
+              {row1Phrases}
             </div>
           </div>
 
-          {/* Line 2 — translates right on scroll */}
-          <div className="w-full overflow-hidden flex items-center py-2">
+          {/* Line 2 — Handwritten Font (translates right on scroll) */}
+          <div className="w-full overflow-hidden flex items-center py-1 my-0 leading-none">
             <div
               ref={row2Ref}
               className="flex flex-nowrap will-change-transform"
               style={{ width: "max-content" }}
             >
-              {rowPhrases}
+              {row2Phrases}
             </div>
           </div>
         </div>
