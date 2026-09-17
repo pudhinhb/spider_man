@@ -1,0 +1,445 @@
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/sketchbook/instrument-serif.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: block;
+  src: url('/sketchbook/instrument-serif-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 200 600;
+  font-display: swap;
+  src: url('/sketchbook/newsreader.woff2') format('woff2');
+}
+
+.sketchbook-root {
+  --paper: #f4f0e6;
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, 0.72);
+  --ink-faint: rgba(255, 255, 255, 0.42);
+  --hairline: rgba(255, 255, 255, 0.12);
+  --earth: #d4af37;
+  --display: 'Instrument Serif', "New York", Georgia, serif;
+  --font: 'Newsreader', "New York", Georgia, serif;
+  --track-caps: 0.22em;
+  --track-nav: 0.06em;
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Stage & Wrap */
+.sb-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sb-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  touch-action: pan-y;
+  padding: 10px 20px;
+}
+
+/* 3D Container */
+.sb-3d {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1750px;
+  perspective-origin: 50% 46%;
+  width: 100%;
+  max-width: 1040px;
+}
+
+.sb-tilt {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transform: translateX(var(--shift-x, 0%)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--zoom, 1));
+  will-change: transform;
+  transition: transform 0.08s ease-out;
+}
+
+.sb-book {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2800 / 1982;
+  transform-style: preserve-3d;
+  z-index: 1;
+}
+
+/* Book Soft Drop Shadows */
+.sb-cast {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sb-cast.ambient {
+  left: 2%;
+  right: 2%;
+  top: 15%;
+  bottom: -4%;
+  background: radial-gradient(50% 50% at 50% 55%,
+    rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0) 78%);
+  filter: blur(34px);
+  opacity: calc(1 - var(--shade, 0) * 0.4);
+}
+
+.sb-cast.contact {
+  left: 6%;
+  right: 6%;
+  top: 50%;
+  bottom: 0%;
+  background: radial-gradient(50% 44% at 50% 45%,
+    rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 80%);
+  filter: blur(16px);
+  opacity: calc(1 - var(--shade, 0) * 0.5);
+}
+
+/* Resting Full Spread / Single Page */
+.sb-full {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.sb-full img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------- */
+/* StPageFlip Engine Styles & Page Elements                      */
+/* ------------------------------------------------------------- */
+.stf__parent {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  transform: translateZ(0);
+  touch-action: pan-y;
+  margin: 0 auto;
+}
+
+.stf__wrapper {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.stf__block {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  perspective: 2000px;
+}
+
+.stf__item {
+  display: none;
+  position: absolute;
+  transform-style: preserve-3d;
+  box-sizing: border-box;
+}
+
+.stf__outerShadow,
+.stf__innerShadow,
+.stf__hardShadow,
+.stf__hardInnerShadow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+/* Individual Book Pages */
+.sb-page {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  cursor: grab;
+}
+
+.sb-page:active {
+  cursor: grabbing;
+}
+
+.sb-page-img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ------------------------------------------------------------- */
+/* Turn Indicator White Arrow (Image 3 Reference with Gap)       */
+/* ------------------------------------------------------------- */
+.sb-turn-arrow {
+  position: absolute;
+  bottom: 24px;
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer !important;
+  z-index: 95;
+  padding: 0;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.85));
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sb-turn-arrow.bottom-right {
+  right: -42px;
+}
+
+.sb-turn-arrow.bottom-left {
+  left: -42px;
+}
+
+.sb-turn-arrow.bottom-right:hover {
+  transform: scale(1.28) translateX(6px);
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.95)) drop-shadow(0 4px 18px rgba(0, 0, 0, 0.9));
+}
+
+.sb-turn-arrow.bottom-left:hover {
+  transform: scale(1.28) translateX(-6px);
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.95)) drop-shadow(0 4px 18px rgba(0, 0, 0, 0.9));
+}
+
+.sb-turn-arrow:active {
+  transform: scale(1.08) !important;
+  transition-duration: 0.1s;
+}
+
+.sb-turn-arrow-svg {
+  width: 32px;
+  height: 32px;
+  display: block;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
+}
+
+.sb-turn-arrow-svg.flipped {
+  transform: scaleX(-1);
+}
+
+/* ------------------------------------------------------------- */
+/* Book Cover Diagonal Glossy Shine Effect (Top-Left to Bottom-Right) */
+/* ------------------------------------------------------------- */
+.sb-cover-shine {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 0 4px 4px 0;
+  z-index: 8;
+}
+
+.sb-shine-beam {
+  position: absolute;
+  top: -80%;
+  left: -80%;
+  width: 260%;
+  height: 260%;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.04) 30%,
+    rgba(255, 255, 255, 0.28) 45%,
+    rgba(255, 255, 255, 0.88) 50%,
+    rgba(255, 255, 255, 0.28) 55%,
+    rgba(255, 255, 255, 0.04) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translate3d(-120%, -120%, 0) rotate(15deg);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* ------------------------------------------------------------- */
+/* Physical Brass Loupe (Magnifying Glass)                      */
+/* Positioned in screen section for docking on right screen edge*/
+/* ------------------------------------------------------------- */
+.loupe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--lr, 270px);
+  height: var(--lr, 270px);
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.25s ease, filter 0.25s ease;
+  will-change: transform;
+}
+
+.loupe.on {
+  opacity: 1;
+}
+
+.loupe.held .ring,
+.loupe.held .grip {
+  cursor: grabbing !important;
+}
+
+.loupe .ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: grab !important;
+  padding: calc(var(--lr, 270px) * 0.058);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 12px 24px rgba(0, 0, 0, 0.35),
+    0 28px 48px rgba(0, 0, 0, 0.3),
+    0 52px 80px rgba(0, 0, 0, 0.2);
+  transition: filter 0.2s ease;
+}
+
+.loupe .ring:hover,
+.loupe .grip:hover {
+  filter: drop-shadow(-4px 0 16px rgba(212, 175, 55, 0.75));
+}
+
+.loupe .ring:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: linear-gradient(146deg,
+    #fffbf0 0%, #e8dcbf 14%, #caa66d 32%, #8e7240 50%,
+    #ddcca0 66%, #fdf5df 80%, #a88d57 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 3px rgba(50, 35, 15, 0.6);
+  -webkit-mask-image: radial-gradient(circle closest-side at 50% 50%, transparent 0 88.2%, #000 89.8% 100%);
+  mask-image: radial-gradient(circle closest-side at 50% 50%, transparent 0 88.2%, #000 89.8% 100%);
+}
+
+.loupe .grip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--lr, 270px) * 0.74);
+  height: calc(var(--lr, 270px) * 0.125);
+  transform-origin: 0 50%;
+  transform: rotate(40deg) translate(calc(var(--lr, 270px) * 0.33), -50%);
+  border-radius: calc(var(--lr, 270px) * 0.06);
+  pointer-events: auto;
+  cursor: grab !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0 13%, rgba(255, 255, 255, 0) 44%, rgba(0, 0, 0, 0.35) 100%),
+    linear-gradient(90deg, #dfc68b 0 14%, #b49354 14% 20%, #76532d 20% 62%, #5f4021 62% 92%, #835c34 92% 100%);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.4), 0 20px 32px rgba(0, 0, 0, 0.25);
+}
+
+.lens {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(52, 40, 22, 0.6),
+    inset 0 4px 12px rgba(30, 20, 10, 0.35),
+    inset 0 -7px 16px rgba(255, 250, 240, 0.2);
+}
+
+.sb-lens-view {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 50%;
+  pointer-events: none;
+  background: #080808;
+}
+
+.sb-lens-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none !important;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+.lens:before,
+.lens:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.lens:before {
+  z-index: 10;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(0, 0, 0, 0) 54%, rgba(45, 30, 15, 0.12) 76%, rgba(30, 20, 10, 0.38) 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(130, 162, 196, 0.3),
+    inset 0 0 0 4px rgba(206, 158, 112, 0.2);
+}
+
+.lens:after {
+  z-index: 11;
+  background:
+    radial-gradient(36% 26% at 29% 19%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 76%),
+    radial-gradient(24% 16% at 74% 86%, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0) 80%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.08) 0 18%, rgba(255, 255, 255, 0) 42%);
+}
+
+/* Captions & Hints */
+@media (max-width: 640px) {
+  .sb-turn-arrow.bottom-right { right: -12px; bottom: 8px; }
+  .sb-turn-arrow.bottom-left { left: -12px; bottom: 8px; }
+  .sb-3d { max-width: 100% !important; }
+}
