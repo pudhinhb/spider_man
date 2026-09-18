@@ -2000,16 +2000,16 @@ export const CreativeThingsSection: React.FC = () => {
 
           {/* ── Supporting Copy ── */}
           <div
-            className="mt-8 w-full max-w-[680px] mx-auto px-4 sm:px-6 text-center"
+            className="mt-12 sm:mt-16 w-full max-w-[860px] mx-auto px-4 sm:px-6 text-center"
             style={{ lineHeight: 1.6 }}
           >
             <p
-              className="text-[12px] sm:text-[14px] font-normal text-[#6B7280]"
+              className="text-[13px] sm:text-[14px] font-normal text-[#6B7280] leading-relaxed"
             >
               I work across branding, graphic design, UI/UX, &amp; vibe coding—turning ideas into visuals &amp; experiences.
             </p>
             <p
-              className="text-[12px] sm:text-[14px] font-normal text-[#6B7280] mt-3"
+              className="text-[13px] sm:text-[14px] font-normal text-[#6B7280] mt-3 leading-relaxed"
             >
               Give me the &lsquo;what if.&rsquo; I&rsquo;ll find the &lsquo;how.&rsquo;
             </p>
