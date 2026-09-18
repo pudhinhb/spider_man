@@ -14,6 +14,9 @@ export const CustomSpiderCursor: React.FC = () => {
     if (!spiderSense) return;
 
     const handleMouseDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest(".hero-spidey-cursor")) return;
+
       gsap.killTweensOf(spiderSense);
       gsap.fromTo(
         spiderSense,

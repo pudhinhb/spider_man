@@ -36,6 +36,8 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
   const spideyImgRef = useRef<HTMLImageElement | null>(null);
 
   const particlesRef = useRef<FluidParticle[]>([]);
+  const lastMoveTimeRef = useRef<number>(0);
+  const coreIntensityRef = useRef<number>(0);
   const mouseRef = useRef<{
     x: number;
     y: number;
@@ -110,7 +112,7 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
       const xNorm = (clientX - rect.left) / rect.width;
       const yNorm = (clientY - rect.top) / rect.height;
 
-      if (xNorm >= -0.1 && xNorm <= 1.1 && yNorm >= -0.1 && yNorm <= 1.1) {
+      if (xNorm >= -0.05 && xNorm <= 1.05 && yNorm >= -0.05 && yNorm <= 1.05) {
         const cx = xNorm * canvas.width;
         const cy = yNorm * canvas.height;
 
@@ -125,11 +127,13 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
         mouseRef.current.x = cx;
         mouseRef.current.y = cy;
         mouseRef.current.active = true;
+        lastMoveTimeRef.current = Date.now();
+        coreIntensityRef.current = 1.0;
 
         const dx = cx - mouseRef.current.prevX;
         const dy = cy - mouseRef.current.prevY;
         const speed = Math.sqrt(dx * dx + dy * dy);
-        const steps = Math.min(10, Math.max(3, Math.floor(speed / 12)));
+        const steps = Math.min(8, Math.max(2, Math.floor(speed / 15)));
 
         const scale = canvas.width / 650;
 
@@ -138,20 +142,23 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
           const px = mouseRef.current.prevX + dx * t;
           const py = mouseRef.current.prevY + dy * t;
 
-          const spread = 28 * scale;
+          // Reduced spread and radius so hover animation is tighter and more focused
+          const spread = 12 * scale;
           particlesRef.current.push({
             x: px + (Math.random() - 0.5) * spread,
             y: py + (Math.random() - 0.5) * spread,
-            vx: (Math.random() - 0.5) * 1.5,
-            vy: (Math.random() - 0.5) * 1.5 - 0.6,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: (Math.random() - 0.5) * 1.2 - 0.4,
             age: 0,
-            maxAge: 45 + Math.random() * 30,
-            radius: (70 + Math.random() * 50) * scale,
-            turbulence: (Math.random() - 0.5) * 0.08,
+            // Shorter particle lifespan for much faster return to original image
+            maxAge: 18 + Math.random() * 12, // ~0.3 - 0.5s instead of 1.25s
+            radius: (30 + Math.random() * 20) * scale, // reduced from 70-120 down to 30-50
+            turbulence: (Math.random() - 0.5) * 0.05,
           });
         }
       } else {
         mouseRef.current.active = false;
+        coreIntensityRef.current = 0;
       }
     };
 
@@ -169,6 +176,7 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
       mouseRef.current.active = false;
       mouseRef.current.prevX = -2000;
       mouseRef.current.prevY = -2000;
+      coreIntensityRef.current = 0;
     };
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -216,7 +224,7 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
         p.x += p.vx;
         p.y += p.vy;
         p.vx += p.turbulence;
-        p.radius += 1.1; // Organic fluid smoke expansion
+        p.radius += 0.35; // gentle, controlled fluid dissipation instead of ballooning
 
         const progress = p.age / p.maxAge;
         if (progress >= 1) {
@@ -224,13 +232,13 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
           continue;
         }
 
-        // Soft sinusoidal alpha curve (ethereal dissipation)
+        // Fast clean fade out curve
         const alpha = Math.sin((1 - progress) * Math.PI * 0.5);
 
         const grad = maskCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
-        grad.addColorStop(0, `rgba(255, 255, 255, ${0.98 * alpha})`);
-        grad.addColorStop(0.35, `rgba(255, 255, 255, ${0.7 * alpha})`);
-        grad.addColorStop(0.7, `rgba(255, 255, 255, ${0.22 * alpha})`);
+        grad.addColorStop(0, `rgba(255, 255, 255, ${0.95 * alpha})`);
+        grad.addColorStop(0.4, `rgba(255, 255, 255, ${0.6 * alpha})`);
+        grad.addColorStop(0.75, `rgba(255, 255, 255, ${0.18 * alpha})`);
         grad.addColorStop(1, "rgba(255, 255, 255, 0)");
 
         maskCtx.fillStyle = grad;
@@ -239,15 +247,25 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
         maskCtx.fill();
       }
 
-      // Active pointer core (soft fluid center directly beneath cursor)
-      if (mouseRef.current.active) {
+      // Active pointer core (tight fluid center directly beneath cursor that fades when idle)
+      const now = Date.now();
+      const timeSinceMove = now - lastMoveTimeRef.current;
+      if (timeSinceMove > 80) {
+        // Rapid fade back to original image when cursor pauses or leaves
+        coreIntensityRef.current = Math.max(0, coreIntensityRef.current - 0.06);
+      }
+
+      if (mouseRef.current.active && coreIntensityRef.current > 0.01) {
         const mx = mouseRef.current.x;
         const my = mouseRef.current.y;
-        const coreRad = 100 * (w / 650);
+        // Reduced core radius (44 instead of 100) for a precise, tight reveal
+        const coreRad = 44 * (w / 650);
+        const intensity = coreIntensityRef.current;
+
         const coreGrad = maskCtx.createRadialGradient(mx, my, 0, mx, my, coreRad);
-        coreGrad.addColorStop(0, "rgba(255, 255, 255, 1.0)");
-        coreGrad.addColorStop(0.45, "rgba(255, 255, 255, 0.88)");
-        coreGrad.addColorStop(0.75, "rgba(255, 255, 255, 0.35)");
+        coreGrad.addColorStop(0, `rgba(255, 255, 255, ${1.0 * intensity})`);
+        coreGrad.addColorStop(0.4, `rgba(255, 255, 255, ${0.8 * intensity})`);
+        coreGrad.addColorStop(0.75, `rgba(255, 255, 255, ${0.25 * intensity})`);
         coreGrad.addColorStop(1, "rgba(255, 255, 255, 0)");
 
         maskCtx.fillStyle = coreGrad;
@@ -263,7 +281,7 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
       }
 
       // Step B: Mask the Spider-Man Suit into spideyCanvas
-      if (spideyImgRef.current) {
+      if (spideyImgRef.current && w > 0 && h > 0 && maskCanvas.width > 0 && maskCanvas.height > 0) {
         drawContainedImage(spideyCtx, spideyImgRef.current, w, h, 1.0);
         spideyCtx.globalCompositeOperation = "destination-in";
         spideyCtx.drawImage(maskCanvas, 0, 0);
