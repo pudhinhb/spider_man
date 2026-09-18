@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
-import { Volume2, VolumeX } from "lucide-react";
 import { soundManager } from "@/lib/sound";
 import { FluidBgCanvas } from "@/components/FluidBgCanvas";
 import { FluidSpideyCanvas } from "@/components/FluidSpideyCanvas";
@@ -11,24 +10,9 @@ import SideRays from "@/components/SideRays";
 
 export const LandoHeroSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
   const portraitStageRef = useRef<HTMLDivElement>(null);
   const skeletonBaseRef = useRef<HTMLDivElement>(null);
   const skeletonScanRef = useRef<HTMLDivElement>(null);
-
-  const [soundOn, setSoundOn] = useState(false);
-
-  // Keep volume button icon 100% synchronized with actual audio playing state
-  useEffect(() => {
-    return soundManager.subscribe((isPlaying) => {
-      setSoundOn(isPlaying);
-    });
-  }, []);
-
-  // Toggle Spider-Man Theme BGM Soundtrack
-  const handleToggleSound = () => {
-    soundManager.toggleBgm();
-  };
 
   // GSAP Choreography & Continuous Top-to-Bottom Face Scanning Animation
   useEffect(() => {
@@ -36,18 +20,13 @@ export const LandoHeroSection: React.FC = () => {
     if (!container) return;
 
     const ctx = gsap.context(() => {
-      // 1. Entrance Animation for Title & Full-Screen Stage
+      // 1. Entrance Animation for Full-Screen Stage
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       tl.fromTo(
-        logoRef.current,
-        { y: -50, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.2 }
-      ).fromTo(
         portraitStageRef.current,
         { scale: 0.96, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 1.5, ease: "power4.out" },
-        "-=0.9"
+        { scale: 1, opacity: 1, duration: 1.5, ease: "power4.out" }
       );
 
       // 2. CONTINUOUS TOP-TO-BOTTOM FACE SCANNING ANIMATION WITH SMOOTH FADE-IN & FADE-OUT
@@ -140,60 +119,7 @@ export const LandoHeroSection: React.FC = () => {
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* 2. TOP HEADER (ONLY TITLE) */}
-      {/* ========================================================================= */}
-      <header className="relative z-30 w-full px-5 sm:px-10 lg:px-14 pt-5 sm:pt-8 flex items-start justify-between pointer-events-auto">
-        {/* Bold GG Logo with dot + Increased Still... Graphic */}
-        <div
-          ref={logoRef}
-          className="cursor-pointer group flex flex-col items-start"
-          onClick={() => soundManager.playThwip()}
-        >
-          <div className="flex items-baseline gap-1">
-            <Image
-              src="/assets/gg_logo.png"
-              alt="GG Logo"
-              width={320}
-              height={160}
-              priority
-              className="w-24 sm:w-36 lg:w-48 h-auto object-contain filter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] group-hover:drop-shadow-[0_0_25px_rgba(0,240,255,0.6)] group-hover:scale-105 transition-all duration-300"
-            />
-            <span className="text-red-500 font-editorial font-black text-3xl sm:text-5xl lg:text-6xl leading-none drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]">
-              .
-            </span>
-          </div>
 
-          <div className="mt-2 sm:mt-3">
-            <Image
-              src="/assets/still.png"
-              alt="Still..."
-              width={340}
-              height={114}
-              priority
-              className="w-32 sm:w-48 lg:w-60 h-auto object-contain filter drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] drop-shadow-[0_0_15px_rgba(255,255,255,0.18)] group-hover:scale-105 group-hover:drop-shadow-[0_0_25px_rgba(239,68,68,0.7)] transition-all duration-300"
-            />
-          </div>
-        </div>
-
-        {/* Minimalist Sound Toggle */}
-        <button
-          onClick={handleToggleSound}
-          className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full border flex items-center justify-center transition-all duration-300 backdrop-blur-md shadow-lg hover:scale-105 active:scale-95 ${
-            soundOn
-              ? "border-cyan-400/80 bg-cyan-950/40 text-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.4)] ring-1 ring-cyan-400/50"
-              : "border-white/15 bg-black/40 text-zinc-400 hover:text-white hover:border-white/30"
-          }`}
-          title={soundOn ? "Audio: ON (Click to Mute)" : "Audio: MUTED (Click to Unmute)"}
-          aria-label={soundOn ? "Mute audio" : "Unmute audio"}
-        >
-          {soundOn ? (
-            <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 animate-pulse" />
-          ) : (
-            <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-50" />
-          )}
-        </button>
-      </header>
 
       {/* ========================================================================= */}
       {/* 3. FULL-SCREEN 3-LAYER INTERACTIVE COMPOSITION (BbOTTOM-ANCHORED HERO STAGE) */}

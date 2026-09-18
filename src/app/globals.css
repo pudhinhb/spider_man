@@ -5,6 +5,7 @@
     --font-editorial: var(--font-playfair), Georgia, serif;
     --font-syne: var(--font-syne), sans-serif;
     --font-space: var(--font-space-grotesk), monospace, sans-serif;
+    --font-sora: var(--font-sora), sans-serif;
   }
 
   html,
@@ -31,6 +32,10 @@
 
 .font-space {
   font-family: var(--font-space);
+}
+
+.font-sora {
+  font-family: var(--font-sora);
 }
 
 /* 3D Perspective container */
@@ -133,4 +138,34 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #e22227;
+}
+
+/* ============================================================ */
+/* Chapter 2: Infinite Horizontal Marquee Text Keyframes         */
+/* ============================================================ */
+
+@keyframes marquee-scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-scroll-right {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.marquee-left {
+  animation: marquee-scroll-left 25s linear infinite;
+}
+
+.marquee-right {
+  animation: marquee-scroll-right 25s linear infinite;
 }
