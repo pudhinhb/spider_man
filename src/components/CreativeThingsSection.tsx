@@ -558,13 +558,13 @@ export const AI_CURSORS = [
     name: "Vignesh",
     color: "#8b5cf6", // Electric Violet
     pointerAngle: 0,
-    posClass: "absolute top-[18%] left-[5%] sm:left-[10%]",
+    posClass: "absolute top-[9%] left-[6%] sm:left-[10%]",
     fromX: -140,
     fromY: -100,
     steps: [
-      { x: 50, y: 30, moveDur: 1.1, pauseDur: 2.0 },
-      { x: 90, y: 15, moveDur: 1.2, pauseDur: 2.2 },
-      { x: 25, y: -15, moveDur: 1.0, pauseDur: 1.9 },
+      { x: 30, y: 15, moveDur: 1.1, pauseDur: 2.0 },
+      { x: 50, y: -10, moveDur: 1.2, pauseDur: 2.2 },
+      { x: 15, y: 10, moveDur: 1.0, pauseDur: 1.9 },
     ],
   },
   {
@@ -572,27 +572,27 @@ export const AI_CURSORS = [
     name: "Wesley",
     color: "#0d99ff", // Figma Royal Blue
     pointerAngle: 0,
-    posClass: "absolute top-[20%] right-[5%] sm:right-[12%]",
+    posClass: "absolute top-[8%] right-[7%] sm:right-[12%]",
     fromX: 140,
     fromY: -90,
     steps: [
-      { x: -55, y: 30, moveDur: 1.2, pauseDur: 2.3 },
-      { x: -25, y: 70, moveDur: 1.0, pauseDur: 1.8 },
-      { x: -75, y: 15, moveDur: 1.3, pauseDur: 2.1 },
+      { x: -30, y: -15, moveDur: 1.2, pauseDur: 2.3 },
+      { x: 20, y: 10, moveDur: 1.0, pauseDur: 1.8 },
+      { x: -15, y: 5, moveDur: 1.3, pauseDur: 2.1 },
     ],
   },
   {
     id: "monisha",
     name: "Monisha",
-    color: "#ec4899", // Vibrant Pink (Requested instead of orange)
+    color: "#ec4899", // Vibrant Pink
     pointerAngle: 0,
-    posClass: "absolute top-[24%] left-[42%] sm:left-[46%]",
+    posClass: "absolute top-[7%] left-[30%] sm:left-[36%]",
     fromX: 30,
     fromY: -130,
     steps: [
-      { x: 35, y: -35, moveDur: 1.0, pauseDur: 1.9 },
-      { x: -30, y: -15, moveDur: 1.1, pauseDur: 2.4 },
-      { x: 15, y: 25, moveDur: 0.9, pauseDur: 2.0 },
+      { x: 25, y: -15, moveDur: 1.0, pauseDur: 1.9 },
+      { x: -25, y: -10, moveDur: 1.1, pauseDur: 2.4 },
+      { x: 10, y: 15, moveDur: 0.9, pauseDur: 2.0 },
     ],
   },
   {
@@ -600,13 +600,13 @@ export const AI_CURSORS = [
     name: "Pudhin",
     color: "#10b981", // Emerald Green
     pointerAngle: 0,
-    posClass: "absolute bottom-[20%] left-[6%] sm:left-[14%]",
+    posClass: "absolute bottom-[16%] left-[6%] sm:left-[12%]",
     fromX: -130,
     fromY: 110,
     steps: [
-      { x: 60, y: -30, moveDur: 1.3, pauseDur: 2.1 },
-      { x: 30, y: -65, moveDur: 1.0, pauseDur: 2.0 },
-      { x: 15, y: -10, moveDur: 1.1, pauseDur: 1.8 },
+      { x: 45, y: -20, moveDur: 1.3, pauseDur: 2.1 },
+      { x: 20, y: -45, moveDur: 1.0, pauseDur: 2.0 },
+      { x: 10, y: -10, moveDur: 1.1, pauseDur: 1.8 },
     ],
   },
   {
@@ -615,13 +615,13 @@ export const AI_CURSORS = [
     color: "#eab308", // Cyber Yellow
     textColor: "text-white font-bold",
     pointerAngle: 0,
-    posClass: "absolute bottom-[22%] right-[6%] sm:right-[15%]",
+    posClass: "absolute bottom-[16%] right-[6%] sm:right-[14%]",
     fromX: 150,
     fromY: 120,
     steps: [
-      { x: -50, y: -35, moveDur: 1.1, pauseDur: 2.2 },
-      { x: -85, y: -15, moveDur: 1.2, pauseDur: 1.9 },
-      { x: -20, y: 30, moveDur: 1.0, pauseDur: 2.3 },
+      { x: -35, y: -25, moveDur: 1.1, pauseDur: 2.2 },
+      { x: -60, y: -10, moveDur: 1.2, pauseDur: 1.9 },
+      { x: -15, y: 20, moveDur: 1.0, pauseDur: 2.3 },
     ],
   },
   {
