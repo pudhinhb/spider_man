@@ -2,7 +2,7 @@ import { LandoHeroSection } from "@/components/LandoHeroSection";
 import { CustomSpiderCursor } from "@/components/CustomSpiderCursor";
 import { Chapter2Section } from "@/components/Chapter2Section";
 import { StickyHeader } from "@/components/StickyHeader";
-import { SketchbookSection } from "@/components/SketchbookSection";
+// import { SketchbookSection } from "@/components/SketchbookSection";
 
 export default function Home() {
   return (
@@ -18,8 +18,8 @@ export default function Home() {
         <LandoHeroSection />
       </Chapter2Section>
 
-      {/* Screen 3: 3D Interactive Sketchbook with LearnRyce PDF Brochure & Screen 2 Ferrofluid Background */}
-      <SketchbookSection />
+      {/* Screen 3: 3D Interactive Sketchbook (Extracted to reusable <SketchbookWidget />) */}
+      {/* <SketchbookSection /> */}
     </main>
   );
 }
