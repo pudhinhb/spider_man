@@ -44,6 +44,7 @@ export const SmoothScrollProvider: React.FC<SmoothScrollProviderProps> = ({ chil
         document.getElementById("chapter-2-scroll"),
         document.getElementById("creative-section"),
         document.getElementById("about-me-section"),
+        document.getElementById("screen-3-sketchbook"),
       ].filter(Boolean) as HTMLElement[];
 
       if (sections.length > 0) {

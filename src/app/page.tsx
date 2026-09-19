@@ -4,9 +4,8 @@ import { Chapter2Section } from "@/components/Chapter2Section";
 import { CreativeThingsSection } from "@/components/CreativeThingsSection";
 import { AboutMeSection } from "@/components/AboutMeSection";
 import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
-import { CurvedBackgroundRibbon } from "@/components/CurvedBackgroundRibbon";
-// import { StickyHeader } from "@/components/StickyHeader";
 // import { SketchbookSection } from "@/components/SketchbookSection";
+// import { StickyHeader } from "@/components/StickyHeader";
 
 export default function Home() {
   return (
@@ -39,9 +38,6 @@ export default function Home() {
             </svg>
           </div>
 
-          {/* Kinetic Curved Red Ribbon with White Text (Starts at Sec 3 Toolbox -> Snakes into Sec 4) */}
-          <CurvedBackgroundRibbon />
-
           {/* Section 3: Editorial Vision ("We make Creative Things.") */}
           <CreativeThingsSection />
 
@@ -49,7 +45,7 @@ export default function Home() {
           <AboutMeSection />
         </div>
 
-        {/* Screen 3: 3D Interactive Sketchbook (Extracted to reusable <SketchbookWidget />) */}
+        {/* Section 5: 3D Interactive Flipbook & Loupe Gallery Stage */}
         {/* <SketchbookSection /> */}
       </main>
     </SmoothScrollProvider>

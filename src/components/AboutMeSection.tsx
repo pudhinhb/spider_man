@@ -110,13 +110,27 @@ export const AboutMeSection: React.FC = () => {
         );
       }
 
-      // 4. Right Polaroid Smooth Slide & Swing
+      // 4. Stuff Box Physical Slide & 90-Degree Rotate Entrance
       if (rightPolaroidRef.current) {
         tl.fromTo(
           rightPolaroidRef.current,
-          { opacity: 0, x: 60, rotate: 12, scale: 0.9 },
-          { opacity: 1, x: 0, rotate: 4, scale: 1, duration: 0.8, ease: "back.out(1.2)" },
-          "-=0.65"
+          {
+            opacity: 0,
+            x: 360,
+            y: 40,
+            rotate: 90,
+            scale: 0.9,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            y: 0,
+            rotate: 0,
+            scale: 1,
+            duration: 1.25,
+            ease: "power3.out",
+          },
+          "-=0.55"
         );
       }
 
@@ -288,62 +302,25 @@ export const AboutMeSection: React.FC = () => {
             </p>
           </div>
 
-          {/* ──────── 3. Right Polaroid Photo ("my workstation") ──────── */}
+          {/* ──────── 3. Right Object ("my stuffs" box) ──────── */}
           <div className="lg:col-span-3 flex justify-center order-3">
             <div
               ref={rightPolaroidRef}
-              onMouseEnter={() => setHoveredPolaroid("workstation")}
-              onMouseLeave={() => setHoveredPolaroid(null)}
-              className={`relative bg-white p-3.5 pb-4 rounded-[4px] shadow-[0_16px_36px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.06)] border border-black/[0.06] opacity-0 transition-all duration-500 ease-out cursor-pointer ${
-                hoveredPolaroid === "workstation"
-                  ? "!rotate-0 scale-105 shadow-[0_24px_48px_rgba(0,0,0,0.16)] -translate-y-2 z-20"
-                  : "scale-100 z-10"
-              }`}
+              className="relative opacity-0 will-change-transform"
               style={{
-                width: "230px",
+                width: "290px",
+                maxWidth: "100%",
                 transformOrigin: "center center",
               }}
             >
-              {/* Top-Left Blue/Lilac Washi Tape */}
               <div
-                className="absolute -top-3 -left-3 w-12 h-6 bg-[#9db4ff]/80 backdrop-blur-[0.5px] -rotate-[32deg] shadow-sm pointer-events-none rounded-[1px] border border-white/20"
-                style={{
-                  clipPath:
-                    "polygon(5% 0%, 95% 10%, 100% 88%, 0% 100%)",
-                }}
-              />
-
-              {/* Top-Right Light Yellow Washi Tape */}
-              <div
-                className="absolute -top-2.5 -right-2.5 w-11 h-5 bg-[#ffe380]/85 backdrop-blur-[0.5px] rotate-[34deg] shadow-sm pointer-events-none rounded-[1px] border border-white/20"
-                style={{
-                  clipPath:
-                    "polygon(0% 8%, 100% 0%, 96% 92%, 4% 100%)",
-                }}
-              />
-
-              {/* Photo Viewport */}
-              <div className="w-full aspect-[4/3] bg-[#1a2e26] rounded-[2px] overflow-hidden relative border border-black/5 shadow-inner">
+                className="group relative cursor-pointer transition-all duration-500 ease-out hover:scale-105 hover:-translate-y-2 drop-shadow-[0_16px_28px_rgba(0,0,0,0.15)] hover:drop-shadow-[0_26px_40px_rgba(0,0,0,0.22)]"
+              >
                 <img
-                  src="/assets/hero_room_setup.png"
-                  alt="My Workstation"
-                  className="w-full h-full object-cover object-center filter contrast-[1.04] brightness-[1.0] transition-transform duration-700 hover:scale-105"
+                  src="/assets/stuff_box.png"
+                  alt="My Stuffs"
+                  className="w-full h-auto object-contain select-none pointer-events-none transition-transform duration-500 group-hover:scale-[1.02]"
                 />
-                {/* Vintage overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
-              </div>
-
-              {/* Polaroid Bottom Handwritten Label */}
-              <div className="w-full pt-2.5 text-center">
-                <span
-                  className="text-lg text-[#333333] tracking-wide"
-                  style={{
-                    fontFamily: "var(--font-caveat), cursive",
-                    fontWeight: 600,
-                  }}
-                >
-                  my workstation
-                </span>
               </div>
             </div>
           </div>
