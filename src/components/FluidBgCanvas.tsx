@@ -68,6 +68,15 @@ export const FluidBgCanvas: React.FC<FluidBgCanvasProps> = ({
     const ctx = canvas.getContext("2d", { willReadFrequently: false });
     const maskCtx = maskCanvas.getContext("2d", { willReadFrequently: false });
     const webCtx = webCanvas.getContext("2d", { willReadFrequently: false });
+
+    let isVisible = true;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(canvas);
     if (!ctx || !maskCtx || !webCtx) return;
 
     let animId: number;
@@ -165,6 +174,10 @@ export const FluidBgCanvas: React.FC<FluidBgCanvasProps> = ({
 
     // 4. Render Loop with Organic Fluid Smoke Mask
     const render = () => {
+      if (!isVisible) {
+        animId = requestAnimationFrame(render);
+        return;
+      }
       const w = canvas.width;
       const h = canvas.height;
 
@@ -246,6 +259,7 @@ export const FluidBgCanvas: React.FC<FluidBgCanvasProps> = ({
     render();
 
     return () => {
+      io.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchstart", handleTouchStart);

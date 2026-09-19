@@ -86,6 +86,15 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
     const spideyCtx = spideyCanvas.getContext("2d", { willReadFrequently: false });
     if (!ctx || !maskCtx || !spideyCtx) return;
 
+    let isVisible = true;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(parent);
+
     let animId: number;
 
     const resize = () => {
@@ -193,8 +202,12 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
 
     let fullSuitOpacity = isFullSuit ? 1 : 0;
 
-    // 5. Render Loop with Dual-Layer Seamless Cross-Erase
+    // 5. High Performance Organic Rendering Pipeline
     const render = () => {
+      if (!isVisible) {
+        animId = requestAnimationFrame(render);
+        return;
+      }
       const w = canvas.width;
       const h = canvas.height;
 
@@ -312,6 +325,7 @@ export const FluidSpideyCanvas: React.FC<FluidSpideyCanvasProps> = ({
     render();
 
     return () => {
+      io.disconnect();
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);

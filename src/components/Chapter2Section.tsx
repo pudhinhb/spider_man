@@ -50,7 +50,7 @@ export const Chapter2Section: React.FC<{
           trigger: section,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1.5,
+          scrub: 1,
           pin: stickyRef.current,
           pinSpacing: true,
         },

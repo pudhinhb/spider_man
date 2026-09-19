@@ -4,6 +4,7 @@ import { Chapter2Section } from "@/components/Chapter2Section";
 import { CreativeThingsSection } from "@/components/CreativeThingsSection";
 import { AboutMeSection } from "@/components/AboutMeSection";
 import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
+import { DesignShowcaseSection } from "@/components/DesignShowcaseSection";
 // import { SketchbookSection } from "@/components/SketchbookSection";
 // import { StickyHeader } from "@/components/StickyHeader";
 
@@ -45,7 +46,10 @@ export default function Home() {
           <AboutMeSection />
         </div>
 
-        {/* Section 5: 3D Interactive Flipbook & Loupe Gallery Stage */}
+        {/* Section 5: The Way Design Should've Been Done (Dark Glassmorphic Cards) */}
+        <DesignShowcaseSection />
+
+        {/* Section 6: 3D Interactive Flipbook & Loupe Gallery Stage */}
         {/* <SketchbookSection /> */}
       </main>
     </SmoothScrollProvider>

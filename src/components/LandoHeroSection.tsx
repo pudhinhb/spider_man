@@ -171,6 +171,7 @@ export const LandoHeroSection: React.FC = () => {
                     alt="Skeleton Wireframe Ambient"
                     fill
                     priority
+                    sizes="(max-width: 768px) 100vw, 1200px"
                     className="object-contain object-bottom filter brightness-110"
                   />
                 </div>
@@ -186,6 +187,7 @@ export const LandoHeroSection: React.FC = () => {
                     alt="Skeleton Wireframe Active Scan"
                     fill
                     priority
+                    sizes="(max-width: 768px) 100vw, 1200px"
                     className="object-contain object-bottom filter brightness-135 contrast-125 drop-shadow-[0_0_12px_#00f0ff] drop-shadow-[0_0_24px_rgba(0,240,255,0.4)]"
                   />
                 </div>

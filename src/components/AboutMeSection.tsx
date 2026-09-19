@@ -3,69 +3,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Sparkles, Zap, Search, Quote } from "lucide-react";
+import { SplitText } from "gsap/SplitText";
 
-gsap.registerPlugin(ScrollTrigger);
-
-interface SkillPill {
-  id: string;
-  name: string;
-  bgClass: string;
-  textClass: string;
-  iconBgClass: string;
-  icon: React.ReactNode;
-  rotation: string;
-}
-
-const SKILLS: SkillPill[] = [
-  {
-    id: "interaction-design",
-    name: "Interaction Design",
-    bgClass: "bg-[#F3B72C] text-[#2c2005]",
-    textClass: "text-[#241a05] font-semibold",
-    iconBgClass: "bg-[#F3B72C]",
-    icon: <Sparkles className="w-4 h-4 text-[#2c2005]" />,
-    rotation: "-rotate-1",
-  },
-  {
-    id: "prototyping",
-    name: "Prototyping",
-    bgClass: "bg-[#0FB66F] text-white",
-    textClass: "text-white font-semibold",
-    iconBgClass: "bg-[#0FB66F]",
-    icon: <Zap className="w-4 h-4 text-white" />,
-    rotation: "rotate-1",
-  },
-  {
-    id: "user-research",
-    name: "User Research",
-    bgClass: "bg-[#E63968] text-white",
-    textClass: "text-white font-semibold",
-    iconBgClass: "bg-[#E63968]",
-    icon: <Search className="w-4 h-4 text-white" />,
-    rotation: "rotate-1",
-  },
-  {
-    id: "motion-design",
-    name: "Motion Design",
-    bgClass: "bg-[#2563EB] text-white",
-    textClass: "text-white font-semibold",
-    iconBgClass: "bg-[#2563EB]",
-    icon: <Quote className="w-4 h-4 text-white fill-white" />,
-    rotation: "-rotate-1",
-  },
-];
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 export const AboutMeSection: React.FC = () => {
   const [hoveredPolaroid, setHoveredPolaroid] = useState<string | null>(null);
-  const [activeSkill, setActiveSkill] = useState<string | null>(null);
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const leftPolaroidRef = useRef<HTMLDivElement>(null);
   const centerTextRef = useRef<HTMLDivElement>(null);
+  const textParagraphRef = useRef<HTMLParagraphElement>(null);
   const rightPolaroidRef = useRef<HTMLDivElement>(null);
-  const skillsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -77,7 +27,7 @@ export const AboutMeSection: React.FC = () => {
         scrollTrigger: {
           trigger: section,
           start: "top 75%",
-          toggleActions: "play none none none",
+          toggleActions: "play none none reverse",
         },
       });
 
@@ -100,14 +50,79 @@ export const AboutMeSection: React.FC = () => {
         );
       }
 
-      // 3. Center Narrative Handwritten Story Reveal
+      // 3. Center Narrative Container Fade & Rise
       if (centerTextRef.current) {
         tl.fromTo(
           centerTextRef.current,
-          { opacity: 0, y: 30, scale: 0.96 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.75, ease: "power3.out" },
-          "-=0.6"
+          { opacity: 0, y: 25 },
+          { opacity: 1, y: 0, duration: 0.75, ease: "power2.out" },
+          "-=0.5"
         );
+      }
+
+      // 3b. Line-by-Line Muted Text-Fill with 50% Hard-Stop Linear Gradient
+      if (centerTextRef.current) {
+        // Apply 50% hard-stop gradient to black text items
+        const blackItems = centerTextRef.current.querySelectorAll(
+          ".fill-line-1, .fill-line-2, .fill-line-3, .fill-line-4, .fill-line-5, .fill-line-6, .fill-line-7, .fill-line-8-black"
+        );
+        gsap.set(blackItems, {
+          backgroundImage: "linear-gradient(to right, #000000 50%, #c0c4cc 50%)",
+          backgroundSize: "200% 100%",
+          backgroundPositionX: "100%",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          color: "transparent",
+          display: "inline-block",
+        });
+
+        // Apply 50% hard-stop gradient to blue text item ("AI and vibe coding.")
+        const blueItem = centerTextRef.current.querySelector(".fill-line-8-blue");
+        if (blueItem) {
+          gsap.set(blueItem, {
+            backgroundImage: "linear-gradient(to right, #2563EB 50%, #93c5fd 50%)",
+            backgroundSize: "200% 100%",
+            backgroundPositionX: "100%",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            color: "transparent",
+            display: "inline-block",
+          });
+        }
+
+        // Sequential line-by-line ScrollTrigger timeline (anchored stably to section)
+        const lineTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top 55%",
+            end: "center 35%",
+            scrub: 0.6,
+          },
+        });
+
+        // Line 1
+        lineTl.to(".fill-line-1", { backgroundPositionX: "0%", ease: "none", duration: 0.9 });
+        // Line 2
+        lineTl.to(".fill-line-2", { backgroundPositionX: "0%", ease: "none", duration: 0.9 });
+        // Line 3 + Highlighter 1 + Yellow spark
+        lineTl.to(".fill-line-3", { backgroundPositionX: "0%", ease: "none", duration: 1 });
+        lineTl.to(".highlighter-line-1", { scaleX: 1, ease: "power1.out", duration: 0.5 }, "<0.4");
+        lineTl.to(".spark-yellow", { opacity: 1, scale: 1, ease: "back.out(2)", duration: 0.4 }, "<0.4");
+        // Line 4 + Highlighter 2
+        lineTl.to(".fill-line-4", { backgroundPositionX: "0%", ease: "none", duration: 0.8 });
+        lineTl.to(".highlighter-line-2", { scaleX: 1, ease: "power1.out", duration: 0.5 }, "<0.3");
+        // Line 5
+        lineTl.to(".fill-line-5", { backgroundPositionX: "0%", ease: "none", duration: 0.9 });
+        // Line 6
+        lineTl.to(".fill-line-6", { backgroundPositionX: "0%", ease: "none", duration: 0.9 });
+        // Line 7
+        lineTl.to(".fill-line-7", { backgroundPositionX: "0%", ease: "none", duration: 0.9 });
+        // Line 8 (powered by + AI and vibe coding.) + Blue spark
+        lineTl.to(".fill-line-8-black", { backgroundPositionX: "0%", ease: "none", duration: 0.4 });
+        lineTl.to(".fill-line-8-blue", { backgroundPositionX: "0%", ease: "none", duration: 0.8 }, "<0.2");
+        lineTl.to(".spark-blue", { opacity: 1, scale: 1, ease: "back.out(2)", duration: 0.4 }, "<0.4");
       }
 
       // 4. Stuff Box Physical Slide & 90-Degree Rotate Entrance
@@ -134,23 +149,7 @@ export const AboutMeSection: React.FC = () => {
         );
       }
 
-      // 5. Bottom Sketched Skill Stamps Pop In Staggered
-      if (skillsRef.current) {
-        const badges = skillsRef.current.querySelectorAll(".skill-badge-item");
-        tl.fromTo(
-          badges,
-          { opacity: 0, scale: 0.75, y: 24 },
-          {
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            duration: 0.55,
-            stagger: 0.09,
-            ease: "back.out(1.6)",
-          },
-          "-=0.4"
-        );
-      }
+
     }, sectionRef);
 
     return () => ctx.revert();
@@ -160,7 +159,7 @@ export const AboutMeSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="about-me-section"
-      className="relative w-full min-h-screen bg-transparent text-black flex flex-col justify-center items-center px-4 sm:px-8 py-20 sm:py-28 overflow-visible select-none"
+      className="relative w-full min-h-screen bg-transparent text-black flex flex-col justify-center items-center px-4 sm:px-8 pt-20 sm:pt-28 pb-36 sm:pb-48 overflow-visible select-none"
       style={{ backgroundColor: "transparent" }}
     >
 
@@ -283,23 +282,84 @@ export const AboutMeSection: React.FC = () => {
             </div>
           </div>
 
-          {/* ──────── 2. Center Handwritten Main Story ──────── */}
+          {/* ──────── 2. Center Narrative Story with Graphic Highlights ──────── */}
           <div
             ref={centerTextRef}
-            className="lg:col-span-6 flex flex-col items-center text-center px-2 sm:px-4 order-1 lg:order-2 opacity-0"
+            className="lg:col-span-6 flex flex-col items-center px-2 sm:px-4 order-1 lg:order-2 will-change-transform opacity-0 select-none text-center"
+            style={{
+              fontFamily: "var(--font-sora), sans-serif",
+            }}
           >
-            <p
-              className="text-2xl sm:text-3xl md:text-[2.15rem] lg:text-[2.25rem] text-[#1a1a1a] leading-[1.38] tracking-[-0.01em] max-w-xl mx-auto transition-colors duration-300"
-              style={{
-                fontFamily: "var(--font-caveat), cursive",
-                fontWeight: 600,
-              }}
-            >
-              I&apos;m a product designer who gets a little too excited about making complicated things feel simple.{" "}
-              <span className="inline-block transform hover:scale-125 transition-transform duration-200">✨</span>{" "}
-              I care about the small details, the edge cases everyone forgets, and shipping work that genuinely makes someone&apos;s day easier.{" "}
-              <span className="inline-block transform hover:scale-125 transition-transform duration-200">🎨</span>
-            </p>
+            <div className="flex flex-col items-center gap-4 sm:gap-5 max-w-xl mx-auto w-full">
+              {/* Block 1: Intro */}
+              <div className="text-base sm:text-lg md:text-[1.22rem] font-normal leading-[1.65] text-center w-full">
+                <span className="block fill-line-item fill-line-1">An M.Com graduate who took a detour</span>
+                <span className="block fill-line-item fill-line-2">into design — and never looked back.</span>
+              </div>
+
+              {/* Block 2: Career Path with Yellow Highlighters & Spark */}
+              <div className="relative inline-flex flex-col items-center my-1">
+                {/* Yellow Hand-Drawn Doodle Rays (Top-Right) */}
+                <div className="spark-yellow absolute -top-3.5 -right-6 sm:-right-8 pointer-events-none opacity-0 scale-50 transition-all">
+                  <svg
+                    className="w-5 h-5 text-[#F59E0B]"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  >
+                    <line x1="4" y1="5" x2="16" y2="1.5" />
+                    <line x1="3" y1="10" x2="17" y2="10" />
+                    <line x1="4" y1="15" x2="16" y2="18.5" />
+                  </svg>
+                </div>
+
+                <div className="text-base sm:text-[1.2rem] md:text-[1.32rem] font-bold tracking-tight text-center leading-[1.5]">
+                  {/* Line 3 with Highlighter */}
+                  <div className="relative inline-block px-1">
+                    <span className="relative z-10 fill-line-item fill-line-3">Graphic Designer → UI/UX Designer →</span>
+                    <span className="highlighter-line-1 absolute -bottom-0.5 left-0 right-0 h-[6px] sm:h-[7px] bg-[#FDE047]/90 rounded-full z-0 origin-left scale-x-0 transition-transform" />
+                  </div>
+
+                  {/* Line 4 with Highlighter */}
+                  <div className="relative inline-block px-1 mt-1">
+                    <span className="relative z-10 fill-line-item fill-line-4">Team Lead at Webnox.</span>
+                    <span className="highlighter-line-2 absolute -bottom-0.5 left-0 right-0 h-[6px] sm:h-[7px] bg-[#FDE047]/90 rounded-full z-0 origin-left scale-x-0 transition-transform" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Block 3: Philosophy */}
+              <div className="text-base sm:text-lg md:text-[1.22rem] font-normal leading-[1.65] text-center w-full">
+                <span className="block fill-line-item fill-line-5">Every step taught me something new,</span>
+                <span className="block fill-line-item fill-line-6">and every project shaped the designer I am today.</span>
+              </div>
+
+              {/* Block 4: Closer with Blue Accent & Spark */}
+              <div className="text-base sm:text-lg md:text-[1.22rem] font-normal leading-[1.65] text-center w-full">
+                <span className="block fill-line-item fill-line-7">This portfolio? Built from that journey —</span>
+                <span className="relative inline-flex items-center justify-center gap-1.5 flex-wrap">
+                  <span className="fill-line-item fill-line-8-black">powered by</span>
+                  <span className="fill-line-item fill-line-8-blue font-bold text-[#2563EB]">AI and vibe coding.</span>
+                  {/* Blue Hand-Drawn Doodle Rays (Bottom-Right) */}
+                  <span className="spark-blue absolute -bottom-2 -right-6 sm:-right-7 pointer-events-none opacity-0 scale-50 transition-all inline-block">
+                    <svg
+                      className="w-4 h-4 text-[#2563EB]"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                    >
+                      <line x1="4" y1="5" x2="16" y2="1.5" />
+                      <line x1="3" y1="10" x2="17" y2="10" />
+                      <line x1="4" y1="15" x2="16" y2="18.5" />
+                    </svg>
+                  </span>
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* ──────── 3. Right Object ("my stuffs" box) ──────── */}
@@ -327,111 +387,7 @@ export const AboutMeSection: React.FC = () => {
 
         </div>
 
-        {/* ──────── Bottom Sketched Postage-Stamp Skill Tags ──────── */}
-        <div
-          ref={skillsRef}
-          className="mt-8 sm:mt-12 flex flex-col items-center gap-3.5 z-10"
-        >
-          
-          {/* Row 1: Interaction Design (Yellow) + Prototyping (Green) */}
-          <div className="flex flex-wrap items-center justify-center gap-3.5">
-            {/* 1. Interaction Design Badge */}
-            <div
-              onClick={() => setActiveSkill(activeSkill === "interaction-design" ? null : "interaction-design")}
-              className="skill-badge-item opacity-0 group relative inline-flex items-center gap-2 cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              {/* Main Pill Stamp */}
-              <div className="px-5 py-2 rounded-[8px] bg-[#F4B223] text-[#1c1404] shadow-[0_4px_12px_rgba(244,178,35,0.25)] flex items-center justify-center font-sans text-[15px] sm:text-[16px] font-semibold tracking-[-0.01em] relative overflow-hidden transition-all duration-200 group-hover:brightness-105">
-                <span
-                  style={{
-                    fontFamily: "var(--font-sora), sans-serif",
-                    fontWeight: 600,
-                  }}
-                >
-                  Interaction Design
-                </span>
-              </div>
 
-              {/* Square Icon Stamp Companion */}
-              <div className="w-10 h-10 rounded-[8px] bg-[#F4B223] flex items-center justify-center text-[#1c1404] shadow-[0_4px_12px_rgba(244,178,35,0.25)] transition-all duration-200 group-hover:rotate-12 group-hover:brightness-105">
-                <Sparkles className="w-5 h-5" strokeWidth={2.2} />
-              </div>
-            </div>
-
-            {/* 2. Prototyping Badge */}
-            <div
-              onClick={() => setActiveSkill(activeSkill === "prototyping" ? null : "prototyping")}
-              className="skill-badge-item opacity-0 group relative inline-flex items-center gap-2 cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              {/* Main Pill Stamp */}
-              <div className="px-5 py-2 rounded-[8px] bg-[#10B981] text-white shadow-[0_4px_12px_rgba(16,185,129,0.25)] flex items-center justify-center font-sans text-[15px] sm:text-[16px] font-semibold tracking-[-0.01em] relative overflow-hidden transition-all duration-200 group-hover:brightness-105">
-                <span
-                  style={{
-                    fontFamily: "var(--font-sora), sans-serif",
-                    fontWeight: 600,
-                  }}
-                >
-                  Prototyping
-                </span>
-              </div>
-
-              {/* Square Icon Stamp Companion */}
-              <div className="w-10 h-10 rounded-[8px] bg-[#10B981] flex items-center justify-center text-white shadow-[0_4px_12px_rgba(16,185,129,0.25)] transition-all duration-200 group-hover:-rotate-12 group-hover:brightness-105">
-                <Zap className="w-5 h-5 fill-white" strokeWidth={2.2} />
-              </div>
-            </div>
-          </div>
-
-          {/* Row 2: User Research (Pink) + Motion Design (Blue) */}
-          <div className="flex flex-wrap items-center justify-center gap-3.5">
-            {/* 3. User Research Badge */}
-            <div
-              onClick={() => setActiveSkill(activeSkill === "user-research" ? null : "user-research")}
-              className="skill-badge-item opacity-0 group relative inline-flex items-center gap-2 cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              {/* Main Pill Stamp */}
-              <div className="px-5 py-2 rounded-[8px] bg-[#F43F5E] text-white shadow-[0_4px_12px_rgba(244,63,94,0.25)] flex items-center justify-center font-sans text-[15px] sm:text-[16px] font-semibold tracking-[-0.01em] relative overflow-hidden transition-all duration-200 group-hover:brightness-105">
-                <span
-                  style={{
-                    fontFamily: "var(--font-sora), sans-serif",
-                    fontWeight: 600,
-                  }}
-                >
-                  User Research
-                </span>
-              </div>
-
-              {/* Square Icon Stamp Companion */}
-              <div className="w-10 h-10 rounded-[8px] bg-[#F43F5E] flex items-center justify-center text-white shadow-[0_4px_12px_rgba(244,63,94,0.25)] transition-all duration-200 group-hover:rotate-12 group-hover:brightness-105">
-                <Search className="w-5 h-5" strokeWidth={2.5} />
-              </div>
-            </div>
-
-            {/* 4. Motion Design Badge */}
-            <div
-              onClick={() => setActiveSkill(activeSkill === "motion-design" ? null : "motion-design")}
-              className="skill-badge-item opacity-0 group relative inline-flex items-center gap-2 cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              {/* Main Pill Stamp */}
-              <div className="px-5 py-2 rounded-[8px] bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.25)] flex items-center justify-center font-sans text-[15px] sm:text-[16px] font-semibold tracking-[-0.01em] relative overflow-hidden transition-all duration-200 group-hover:brightness-105">
-                <span
-                  style={{
-                    fontFamily: "var(--font-sora), sans-serif",
-                    fontWeight: 600,
-                  }}
-                >
-                  Motion Design
-                </span>
-              </div>
-
-              {/* Square Icon Stamp Companion */}
-              <div className="w-10 h-10 rounded-[8px] bg-[#2563EB] flex items-center justify-center text-white shadow-[0_4px_12px_rgba(37,99,235,0.25)] transition-all duration-200 group-hover:-rotate-12 group-hover:brightness-105">
-                <Quote className="w-5 h-5 fill-white" strokeWidth={2.2} />
-              </div>
-            </div>
-          </div>
-
-        </div>
       </div>
     </section>
   );

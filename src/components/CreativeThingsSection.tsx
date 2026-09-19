@@ -640,6 +640,31 @@ export const AI_CURSORS = [
   },
 ];
 
+const GaneshFontRotator: React.FC = React.memo(() => {
+  const [fontIndex, setFontIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setFontIndex((prev) => (prev + 1) % GANESH_FONTS.length);
+    }, 1800);
+    return () => clearInterval(timer);
+  }, []);
+
+  const font = GANESH_FONTS[fontIndex];
+
+  return (
+    <span
+      className={`inline-block text-[#111111] transition-opacity duration-200 text-left whitespace-nowrap ${font.className}`}
+      style={{
+        fontFamily: font.style,
+        fontSize: font.fontSize,
+      }}
+    >
+      {font.text || "Ganesh"}
+    </span>
+  );
+});
+
 export const CreativeThingsSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const titleContainerRef = useRef<HTMLDivElement>(null);
@@ -659,16 +684,6 @@ export const CreativeThingsSection: React.FC = () => {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [selectedColor, setSelectedColor] = useState("#111111"); // Onyx Black
-
-  // 16 Fonts Random Rotator for "Ganesh" name on Line 1 (Including authentic Tamil font)
-  const [ganeshFontIndex, setGaneshFontIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setGaneshFontIndex((prev) => (prev + 1) % GANESH_FONTS.length);
-    }, 1800);
-    return () => clearInterval(timer);
-  }, []);
 
   // Popover menus & Focus state
   const [fontMenuOpen, setFontMenuOpen] = useState(false);
@@ -893,7 +908,6 @@ export const CreativeThingsSection: React.FC = () => {
     if (!section) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      setIsHoveringSection(true);
       if (userCursorRef.current) {
         userCursorRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       }
@@ -1644,16 +1658,7 @@ export const CreativeThingsSection: React.FC = () => {
 
           {/* Right Wing: Dedicated Left-Aligned Name Slot */}
           <span className="flex-1 flex items-center justify-start pl-2.5 sm:pl-3.5 md:pl-4 overflow-visible">
-            <span
-              key={ganeshFontIndex}
-              className={`inline-block text-[#111111] transition-opacity duration-200 text-left whitespace-nowrap ${GANESH_FONTS[ganeshFontIndex].className}`}
-              style={{
-                fontFamily: GANESH_FONTS[ganeshFontIndex].style,
-                fontSize: GANESH_FONTS[ganeshFontIndex].fontSize,
-              }}
-            >
-              {GANESH_FONTS[ganeshFontIndex].text || "Ganesh"}
-            </span>
+            <GaneshFontRotator />
           </span>
         </h2>
 
