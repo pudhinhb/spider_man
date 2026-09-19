@@ -1515,11 +1515,11 @@ export const CreativeThingsSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="creative-section"
-      className={`relative w-full min-h-screen bg-white text-black flex flex-col justify-center items-center px-4 sm:px-8 py-20 sm:py-28 overflow-hidden select-none ${
+      className={`relative w-full min-h-screen bg-transparent text-black flex flex-col justify-center items-center px-4 sm:px-8 py-20 sm:py-28 overflow-visible select-none ${
         isHoveringSection ? "creative-canvas-cursor" : ""
       }`}
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "transparent",
       }}
     >
       {/* Seamless blend gradient connector at the top */}
@@ -1530,23 +1530,6 @@ export const CreativeThingsSection: React.FC = () => {
             "linear-gradient(to bottom, #ffffff 0%, rgba(255,255,255,0.8) 50%, transparent 100%)",
         }}
       />
-
-      {/* Perfectly & Evenly Placed Dotted Grid Pattern (Faded to 50% Opacity) */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern
-              id="dotted-grid-pattern"
-              width="32"
-              height="32"
-              patternUnits="userSpaceOnUse"
-            >
-              <circle cx="16" cy="16" r="1.25" fill="#000000" opacity="0.16" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dotted-grid-pattern)" />
-        </svg>
-      </div>
 
       {/* 5 Collaborative Marvel / Spidey AI Multiplayer Cursors (Spread across Section 3 Canvas) */}
       <div className="absolute inset-0 pointer-events-none z-25 overflow-hidden">
@@ -1799,6 +1782,7 @@ export const CreativeThingsSection: React.FC = () => {
           {/* ────────────────────────────────────────────────────────── */}
           <div
             ref={toolbarRef}
+            id="creative-toolbar-box"
             className="mt-4 sm:mt-5 relative inline-flex items-center h-[38px] px-3 sm:px-3.5 rounded-[9px] bg-white/95 backdrop-blur-xl border border-black/[0.08] shadow-[0_4px_16px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.03)] select-none z-30 transition-all duration-200"
           >
             {/* 1. Font Chooser / Heading Dropdown */}
@@ -2000,16 +1984,16 @@ export const CreativeThingsSection: React.FC = () => {
 
           {/* ── Supporting Copy ── */}
           <div
-            className="mt-12 sm:mt-16 w-full max-w-[860px] mx-auto px-4 sm:px-6 text-center"
-            style={{ lineHeight: 1.6 }}
+            className="mt-5 sm:mt-6 w-full max-w-[860px] mx-auto px-4 sm:px-6 text-center"
+            style={{ lineHeight: 1.4 }}
           >
             <p
-              className="text-[13px] sm:text-[14px] font-normal text-[#6B7280] leading-relaxed"
+              className="text-[13px] sm:text-[14px] font-normal text-[#6B7280] leading-snug"
             >
               I work across branding, graphic design, UI/UX, &amp; vibe coding—turning ideas into visuals &amp; experiences.
             </p>
             <p
-              className="text-[13px] sm:text-[14px] font-normal text-[#6B7280] mt-3 leading-relaxed"
+              className="text-[13px] sm:text-[14px] font-normal italic text-[#6B7280] mt-1.5 leading-snug"
             >
               Give me the &lsquo;what if.&rsquo; I&rsquo;ll find the &lsquo;how.&rsquo;
             </p>
