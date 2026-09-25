@@ -31,6 +31,7 @@ export const Chapter2Section: React.FC<{
   const textLayerRef = useRef<HTMLDivElement>(null);
   const row1Ref = useRef<HTMLDivElement>(null);
   const row2Ref = useRef<HTMLDivElement>(null);
+  const whiteVeilRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -39,38 +40,46 @@ export const Chapter2Section: React.FC<{
     const textLayer = textLayerRef.current;
     const row1 = row1Ref.current;
     const row2 = row2Ref.current;
-    if (!section || !heroContainer || !bg || !textLayer || !row1 || !row2) return;
+    const whiteVeil = whiteVeilRef.current;
+    if (!section || !heroContainer || !bg || !textLayer || !row1 || !row2 || !whiteVeil) return;
 
     const ctx = gsap.context(() => {
-      /* ── Scroll-Driven Animation ── */
+      /* ── Scroll-Driven Animation with Custom Bezier Transitions ── */
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1.2,
+          scrub: 1,
           pin: stickyRef.current,
-          pinSpacing: false,
+          pinSpacing: true,
         },
       });
 
+      // Custom smooth cubic bezier curve
+      const customBezier = "cubic-bezier(0.77, 0, 0.175, 1)";
+
       // ─────────────────────────────────────────────────────────────
-      // 1. HERO ZOOM-OUT (0.0 → 0.5):
-      // Hero zooms down to its end stage limit (0.38 scale) during the
-      // first half of scroll. From 0.5 → 1.0 (the 1 additional scroll phase),
-      // the hero stays fixed at 0.38.
+      // 1. HERO ZOOM-OUT WITH RESPONSIVE WIDTH REDUCTION (0.0 → 0.45):
+      // Scales down and trims excess lateral width without stretching!
       // ─────────────────────────────────────────────────────────────
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+      const targetScale = isMobile ? 0.54 : 0.38;
+      const targetWidth = isMobile ? "90vw" : "72vw";
+
       tl.fromTo(
         heroContainer,
         {
           scale: 1,
+          width: "100vw",
           borderRadius: "0px",
         },
         {
-          scale: 0.38,
+          scale: targetScale,
+          width: targetWidth,
           borderRadius: "24px",
           ease: "power2.out",
-          duration: 0.5,
+          duration: 0.45,
         },
         0
       );
@@ -79,11 +88,11 @@ export const Chapter2Section: React.FC<{
       tl.fromTo(
         bg,
         { opacity: 0 },
-        { opacity: 1, ease: "none", duration: 0.4 },
+        { opacity: 1, ease: "none", duration: 0.35 },
         0
       );
 
-      // Text layer fades in smoothly right at the start so it's visible
+      // Text layer fades in smoothly right at the start
       tl.fromTo(
         textLayer,
         { opacity: 0 },
@@ -92,23 +101,62 @@ export const Chapter2Section: React.FC<{
       );
 
       // ─────────────────────────────────────────────────────────────
-      // 2. SMOOTH GSAP SCROLLING TEXT (0.0 → 1.0):
-      // - Active and moving during the hero zoom-out phase (0.0 → 0.5)
-      // - Continues scrolling through the 1 additional scroll phase (0.5 → 1.0)
-      //   after the hero reaches its zoom end stage!
+      // 2. SMOOTH GSAP SCROLLING QUOTE ROWS (0.0 → 0.65):
+      // Dynamic kinetic translation across the hero card
       // ─────────────────────────────────────────────────────────────
       tl.fromTo(
         row1,
         { xPercent: -4 },
-        { xPercent: -34, ease: "none", duration: 1 },
+        { xPercent: -34, ease: "none", duration: 0.68 },
         0
       );
 
       tl.fromTo(
         row2,
         { xPercent: -34 },
-        { xPercent: -4, ease: "none", duration: 1 },
+        { xPercent: -4, ease: "none", duration: 0.68 },
         0
+      );
+
+      // ─────────────────────────────────────────────────────────────
+      // 3. PHASE A: FADE OUT TEXT 1ST (0.46 → 0.62)
+      // Background quote text rows dissolve completely while hero is crisp
+      // ─────────────────────────────────────────────────────────────
+      tl.to(
+        textLayer,
+        {
+          opacity: 0,
+          ease: "power2.inOut",
+          duration: 0.16,
+        },
+        0.46
+      );
+
+      // ─────────────────────────────────────────────────────────────
+      // 4. PHASE B: FADE OUT FRONT IMAGE & TRANSITION TO WHITE (0.64 → 0.98)
+      // Only AFTER text is completely gone, the front image dissolves into white!
+      // ─────────────────────────────────────────────────────────────
+      tl.fromTo(
+        whiteVeil,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          ease: customBezier,
+          duration: 0.34,
+        },
+        0.64
+      );
+
+      // Front hero image dissolves gracefully into the luminous white
+      tl.to(
+        heroContainer,
+        {
+          opacity: 0,
+          scale: targetScale * 0.88,
+          ease: customBezier,
+          duration: 0.30,
+        },
+        0.66
       );
     }, sectionRef);
 
@@ -174,7 +222,7 @@ export const Chapter2Section: React.FC<{
       ref={sectionRef}
       id="chapter-2-scroll"
       className="relative w-full"
-      style={{ height: "360vh" }}
+      style={{ height: "280vh" }}
     >
       {/* Sticky Viewport — stays pinned for scroll choreography */}
       <div
@@ -251,12 +299,25 @@ export const Chapter2Section: React.FC<{
         <div className="absolute inset-0 w-full h-full z-20 flex items-center justify-center pointer-events-none">
           <div
             ref={heroContainerRef}
-            className="relative w-full h-full overflow-hidden will-change-transform pointer-events-auto shadow-2xl"
-            style={{ transformOrigin: "center center" }}
+            className="relative h-full overflow-hidden will-change-transform pointer-events-auto shadow-2xl flex items-center justify-center"
+            style={{ width: "100vw", transformOrigin: "center center" }}
           >
-            {children}
+            {/* Aspect-Preserving Content Stage: Never squashes or stretches the hero section */}
+            <div className="relative w-screen min-w-[100vw] h-full flex items-center justify-center shrink-0">
+              {children}
+            </div>
           </div>
         </div>
+
+        {/* ────────────────────────────────────────────── */}
+        {/* LAYER 4: Smooth Black-to-White Veil           */}
+        {/* Luminous dissolve into pure white for Section 3*/}
+        {/* ────────────────────────────────────────────── */}
+        <div
+          ref={whiteVeilRef}
+          className="absolute inset-0 w-full h-full z-30 pointer-events-none will-change-[opacity]"
+          style={{ background: "#ffffff", opacity: 0 }}
+        />
       </div>
     </section>
   );

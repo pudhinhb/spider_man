@@ -7,6 +7,7 @@ import { soundManager } from "@/lib/sound";
 import { FluidBgCanvas } from "@/components/FluidBgCanvas";
 import { FluidSpideyCanvas } from "@/components/FluidSpideyCanvas";
 import SideRays from "@/components/SideRays";
+import { HeroMusicWave } from "@/components/HeroMusicWave";
 
 export const LandoHeroSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,43 +21,48 @@ export const LandoHeroSection: React.FC = () => {
     if (!container) return;
 
     const ctx = gsap.context(() => {
-      // 1. Entrance Animation for Full-Screen Stage
+      // 1. Entrance Animation for Full-Screen Stage (Subtle and Smooth)
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       tl.fromTo(
         portraitStageRef.current,
-        { scale: 0.96, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 1.5, ease: "power4.out" }
+        { scale: 0.98, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 1.4, ease: "power3.out" }
       );
 
-      // 2. CONTINUOUS TOP-TO-BOTTOM FACE SCANNING ANIMATION WITH SMOOTH FADE-IN & FADE-OUT
-      // Organic elliptical radial mask sweeping from forehead (6%) to chin (58%)
+      // 2. CONTINUOUS TOP-TO-BOTTOM FACE SCANNING ANIMATION (50% Opacity + 10% Glow Boost while appearing)
+      // Organic elliptical radial mask sweeping across facial region
       const scanTl = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: "sine.inOut" } });
 
       const scanObj = { progress: 0 };
       scanTl.to(scanObj, {
         progress: 100,
-        duration: 2.8,
+        duration: 3.0,
         onUpdate: () => {
           const p = scanObj.progress;
-          // Calculate vertical position across facial region (6% forehead to 58% chin)
-          const topPercent = 6 + p * 0.52;
+          // Calculate vertical position across facial region (sweeping smoothly across eyes, nose, cheeks)
+          const topPercent = 8 + p * 0.48;
 
-          // Smooth sinusoidal fade-in and fade-out at top and bottom extremes
+          // Sinusoidal curve peaking at 75% (0.75) opacity when appearing
           const edgeFade = Math.sin((p / 100) * Math.PI);
-          const scanOpacity = Math.pow(edgeFade, 0.45); // Eased curve: stays bright across face, smoothly fades at edges
+          const scanOpacity = Math.pow(edgeFade, 0.65) * 0.75;
+
+          // +10% dynamic holographic cyan glow boost while appearing
+          const glowIntensity = 0.45 + edgeFade * 0.10; // +10% glow when appearing
+          const glowRadius = Math.round(10 + edgeFade * 6);
 
           // Soft 2D Elliptical Radial Gradient Mask centered over the face wireframe
           if (skeletonScanRef.current) {
             skeletonScanRef.current.style.opacity = `${scanOpacity}`;
-            const ellipticalMask = `radial-gradient(ellipse 26% 12% at 51% ${topPercent}%, black 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 70%, transparent 100%)`;
+            const ellipticalMask = `radial-gradient(ellipse 28% 13% at 51% ${topPercent}%, black 0%, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.25) 75%, transparent 100%)`;
             skeletonScanRef.current.style.webkitMaskImage = ellipticalMask;
             skeletonScanRef.current.style.maskImage = ellipticalMask;
+            skeletonScanRef.current.style.filter = `brightness(${1.25 + edgeFade * 0.15}) contrast(1.15) drop-shadow(0 0 ${glowRadius}px rgba(0, 240, 255, ${glowIntensity})) drop-shadow(0 0 24px rgba(0, 240, 255, 0.35))`;
           }
         },
       });
 
-      // 3. Subtle Parallax 3D Tilt on Mouse Movement
+      // 3. Refined Parallax 3D Tilt on Mouse Movement (Reduced amplitude for tighter feel)
       const handleMouseMove = (e: MouseEvent) => {
         const { innerWidth, innerHeight } = window;
         const xPercent = (e.clientX / innerWidth - 0.5) * 2;
@@ -64,10 +70,10 @@ export const LandoHeroSection: React.FC = () => {
 
         if (portraitStageRef.current) {
           gsap.to(portraitStageRef.current, {
-            rotationY: xPercent * 3,
-            rotationX: -yPercent * 2.5,
-            x: xPercent * 8,
-            y: yPercent * 6,
+            rotationY: xPercent * 1.6,
+            rotationX: -yPercent * 1.2,
+            x: xPercent * 4,
+            y: yPercent * 3,
             duration: 0.8,
             ease: "power2.out",
             overwrite: "auto",
@@ -88,8 +94,15 @@ export const LandoHeroSection: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-screen min-h-screen flex flex-col justify-between overflow-hidden bg-black text-white select-none"
+      className="hero-spidey-cursor relative w-full h-screen min-h-screen flex flex-col justify-between overflow-hidden bg-black text-white select-none"
     >
+      {/* ========================================================================= */}
+      {/* TOP-RIGHT CORNER: WHITE MUSIC WAVES EQUALIZER & SPIDER-MAN THEME PLAYER   */}
+      {/* ========================================================================= */}
+      <div className="absolute top-6 right-6 sm:top-8 sm:right-10 z-40 pointer-events-auto">
+        <HeroMusicWave />
+      </div>
+
       {/* ========================================================================= */}
       {/* 1. FULL-SCREEN BACKGROUND (Fluid Cursor-Revealed Spider Web BG + SideRays) */}
       {/* ========================================================================= */}
@@ -127,8 +140,8 @@ export const LandoHeroSection: React.FC = () => {
       {/* - Layer 3: Cyan Holographic Skeleton Blueprint with continuous face scan */}
       {/* ========================================================================= */}
       <div className="absolute inset-0 w-full h-full flex items-end justify-center pointer-events-auto z-10 perspective-1000 overflow-hidden">
-        {/* Dedicated Responsive Scale Container: Immune to GSAP transform overrides on portraitStageRef */}
-        <div className="relative w-full h-full flex items-end justify-center max-sm:scale-[2.85] max-sm:origin-bottom sm:scale-100">
+        {/* Dedicated Responsive Scale Container: Scaled up to 0.85 for a slightly bigger, well-balanced presence */}
+        <div className="relative w-full h-full flex items-end justify-center max-sm:scale-[2.35] max-sm:origin-bottom sm:scale-[0.85] origin-bottom transition-transform duration-300">
           <div
             ref={portraitStageRef}
             className="relative w-full h-full flex items-end justify-center preserve-3d origin-bottom"
@@ -145,34 +158,37 @@ export const LandoHeroSection: React.FC = () => {
                 className="z-10"
               />
 
-              {/* LAYER 3: SKELETON BLUEPRINT WITH CONTINUOUS TOP-TO-BOTTOM SCANNING */}
-              {/* - Soft 2D Elliptical feathered gradient mask with FADE-IN & FADE-OUT */}
+              {/* LAYER 3: SKELETON BLUEPRINT WITH DELICATE TOP-TO-BOTTOM SCANNING */}
               <div className="absolute inset-0 w-full h-full pointer-events-none z-20 flex items-end justify-center">
-                {/* 3A: Ambient Ghost Skeleton Blueprint (Low Opacity: ~0.08) */}
+                {/* 3A: Ambient Ghost Skeleton Blueprint */}
                 <div
                   ref={skeletonBaseRef}
-                  className="absolute inset-0 w-full h-full opacity-0 mix-blend-screen"
+                  className="absolute inset-0 w-full h-full opacity-0 mix-blend-overlay"
+                  style={{ mixBlendMode: "overlay" }}
                 >
                   <Image
                     src="/assets/mask_blueprint.png"
                     alt="Skeleton Wireframe Ambient"
                     fill
                     priority
+                    sizes="(max-width: 768px) 100vw, 1200px"
                     className="object-contain object-bottom filter brightness-110"
                   />
                 </div>
 
-                {/* 3B: High-Intensity Active Scanning Band (Soft 2D Elliptical Radial Mask with Fade In & Out) */}
+                {/* 3B: Active Scanning Band with 75% Opacity and Overlay Blend Filter */}
                 <div
                   ref={skeletonScanRef}
-                  className="absolute inset-0 w-full h-full mix-blend-screen opacity-0 transition-all duration-75"
+                  className="absolute inset-0 w-full h-full mix-blend-overlay opacity-0 transition-all duration-75"
+                  style={{ mixBlendMode: "overlay" }}
                 >
                   <Image
                     src="/assets/mask_blueprint.png"
                     alt="Skeleton Wireframe Active Scan"
                     fill
                     priority
-                    className="object-contain object-bottom filter brightness-175 drop-shadow-[0_0_15px_#00f0ff] drop-shadow-[0_0_30px_#00f0ff]"
+                    sizes="(max-width: 768px) 100vw, 1200px"
+                    className="object-contain object-bottom filter brightness-135 contrast-125 drop-shadow-[0_0_12px_#00f0ff] drop-shadow-[0_0_24px_rgba(0,240,255,0.4)]"
                   />
                 </div>
               </div>
@@ -180,28 +196,6 @@ export const LandoHeroSection: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Bottom Footer Area */}
-      <footer className="relative z-30 w-full px-5 sm:px-10 lg:px-14 pb-5 sm:pb-6 flex items-end justify-between pointer-events-none">
-        <div className="text-[9px] sm:text-[10px] font-mono text-zinc-500 tracking-wider">
-          EST. 2026 // SPIDER-VERSE
-        </div>
-
-        {/* Bottom Right "TO BE CONTINUED" Badge */}
-        <div
-          className="pointer-events-auto cursor-pointer group flex items-center justify-end"
-          onClick={() => soundManager.playThwip()}
-        >
-          <Image
-            src="/assets/to_be_continued.png"
-            alt="To Be Continued"
-            width={240}
-            height={86}
-            priority
-            className=" w-28 sm:w-40 lg:w-52 h-auto object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] drop-shadow-[0_0_15px_rgba(255,255,255,0.15)] group-hover:scale-105 group-hover:drop-shadow-[0_0_25px_rgba(239,68,68,0.7)] transition-all duration-300"
-          />
-        </div>
-      </footer>
     </div>
   );
 };

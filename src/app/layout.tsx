@@ -9,6 +9,14 @@ import {
   Marvel,
   Bebas_Neue,
   Permanent_Marker,
+  Cabin_Sketch,
+  Caveat,
+  Pacifico,
+  Cinzel,
+  Righteous,
+  Silkscreen,
+  Orbitron,
+  Anek_Tamil,
 } from "next/font/google";
 import "./globals.css";
 
@@ -61,6 +69,54 @@ const permanentMarker = Permanent_Marker({
   weight: "400",
 });
 
+const cabinSketch = Cabin_Sketch({
+  variable: "--font-sketch",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const pacifico = Pacifico({
+  variable: "--font-pacifico",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const righteous = Righteous({
+  variable: "--font-righteous",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const silkscreen = Silkscreen({
+  variable: "--font-silkscreen",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+});
+
+const anekTamil = Anek_Tamil({
+  variable: "--font-anek-tamil",
+  subsets: ["latin", "tamil"],
+  weight: ["400", "600", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "GG. — Full-Stack Architect & Spider-Man Portfolio",
   description:
@@ -81,7 +137,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${syne.variable} ${playfair.variable} ${sora.variable} ${marvelFont.variable} ${bebasNeue.variable} ${permanentMarker.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${syne.variable} ${playfair.variable} ${sora.variable} ${marvelFont.variable} ${bebasNeue.variable} ${permanentMarker.variable} ${cabinSketch.variable} ${caveat.variable} ${pacifico.variable} ${cinzel.variable} ${righteous.variable} ${silkscreen.variable} ${orbitron.variable} ${anekTamil.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-black text-white overflow-x-hidden selection:bg-red-600 selection:text-white">
         {children}

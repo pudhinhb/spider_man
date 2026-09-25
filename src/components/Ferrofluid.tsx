@@ -246,13 +246,20 @@ export const Ferrofluid: React.FC<FerrofluidProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
+    const targetDpr = dpr ?? (typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 1.5) : 1);
     const renderer = new Renderer({
-      dpr: dpr ?? (typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1),
+      dpr: targetDpr,
       alpha: true,
       antialias: true,
     });
     rendererRef.current = renderer;
     const gl = renderer.gl;
+
+    let isVisible = true;
+    const io = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { threshold: 0.05 });
+    io.observe(container);
     const canvas = gl.canvas;
     gl.clearColor(0, 0, 0, 0);
     canvas.style.width = "100%";
@@ -340,7 +347,7 @@ export const Ferrofluid: React.FC<FerrofluidProps> = ({
       } else {
         lastTimeRef.current = t;
       }
-      if (!paused && programRef.current && meshRef.current) {
+      if (!paused && isVisible && programRef.current && meshRef.current) {
         try {
           renderer.render({ scene: meshRef.current });
         } catch (e) {
@@ -351,6 +358,7 @@ export const Ferrofluid: React.FC<FerrofluidProps> = ({
     rafRef.current = requestAnimationFrame(loop);
 
     return () => {
+      io.disconnect();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (mouseInteraction) window.removeEventListener("mousemove", onPointerMove);
       ro.disconnect();
